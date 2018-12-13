@@ -11,6 +11,8 @@
 
 #include "buffer/replacer.h"
 #include "hash/extendible_hash.h"
+#include <set>
+#include <mutex>
 
 namespace cmudb
 {
@@ -34,6 +36,15 @@ public:
 
 private:
   // add your member variables here
+
+  // hash_key, <time_stamp, object>
+  HashTable<size_t, std::pair<size_t, T>> *hash_map_;
+  // Store pair <timestamp, hash_key(object),>
+  std::set<std::pair<size_t, size_t>> *LRU_;
+
+  size_t time_count_;
+
+  std::mutex latch_;
 };
 
 } // namespace cmudb

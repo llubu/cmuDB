@@ -9,6 +9,7 @@
 #pragma once
 #include <list>
 #include <mutex>
+#include <memory>
 
 #include "buffer/lru_replacer.h"
 #include "disk/disk_manager.h"
