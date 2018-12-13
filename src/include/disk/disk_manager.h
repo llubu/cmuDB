@@ -14,9 +14,11 @@
 
 #include "common/config.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class DiskManager {
+class DiskManager
+{
 public:
   DiskManager(const std::string &db_file);
   ~DiskManager();

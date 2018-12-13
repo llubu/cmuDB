@@ -4,8 +4,10 @@
 #pragma once
 #include "type/numeric_type.h"
 
-namespace cmudb {
-class DecimalType : public NumericType {
+namespace cmudb
+{
+class DecimalType : public NumericType
+{
 public:
   DecimalType();
   // DecimalValue(DecDef definition);

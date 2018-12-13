@@ -8,7 +8,8 @@
 #include "common/rid.h"
 #include "page/b_plus_tree_leaf_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /*****************************************************************************
  * HELPER METHODS AND UTILITIES
@@ -26,7 +27,8 @@ void B_PLUS_TREE_LEAF_PAGE_TYPE::Init(page_id_t page_id, page_id_t parent_id) {}
  * Helper methods to set/get next page id
  */
 INDEX_TEMPLATE_ARGUMENTS
-page_id_t B_PLUS_TREE_LEAF_PAGE_TYPE::GetNextPageId() const {
+page_id_t B_PLUS_TREE_LEAF_PAGE_TYPE::GetNextPageId() const
+{
   return INVALID_PAGE_ID;
 }
 
@@ -39,7 +41,8 @@ void B_PLUS_TREE_LEAF_PAGE_TYPE::SetNextPageId(page_id_t next_page_id) {}
  */
 INDEX_TEMPLATE_ARGUMENTS
 int B_PLUS_TREE_LEAF_PAGE_TYPE::KeyIndex(
-    const KeyType &key, const KeyComparator &comparator) const {
+    const KeyType &key, const KeyComparator &comparator) const
+{
   return 0;
 }
 
@@ -48,7 +51,8 @@ int B_PLUS_TREE_LEAF_PAGE_TYPE::KeyIndex(
  * array offset)
  */
 INDEX_TEMPLATE_ARGUMENTS
-KeyType B_PLUS_TREE_LEAF_PAGE_TYPE::KeyAt(int index) const {
+KeyType B_PLUS_TREE_LEAF_PAGE_TYPE::KeyAt(int index) const
+{
   // replace with your own code
   KeyType key;
   return key;
@@ -59,7 +63,8 @@ KeyType B_PLUS_TREE_LEAF_PAGE_TYPE::KeyAt(int index) const {
  * "index"(a.k.a array offset)
  */
 INDEX_TEMPLATE_ARGUMENTS
-const MappingType &B_PLUS_TREE_LEAF_PAGE_TYPE::GetItem(int index) {
+const MappingType &B_PLUS_TREE_LEAF_PAGE_TYPE::GetItem(int index)
+{
   // replace with your own code
   return array[0];
 }
@@ -74,7 +79,8 @@ const MappingType &B_PLUS_TREE_LEAF_PAGE_TYPE::GetItem(int index) {
 INDEX_TEMPLATE_ARGUMENTS
 int B_PLUS_TREE_LEAF_PAGE_TYPE::Insert(const KeyType &key,
                                        const ValueType &value,
-                                       const KeyComparator &comparator) {
+                                       const KeyComparator &comparator)
+{
   return 0;
 }
 
@@ -102,7 +108,8 @@ void B_PLUS_TREE_LEAF_PAGE_TYPE::CopyHalfFrom(MappingType *items, int size) {}
  */
 INDEX_TEMPLATE_ARGUMENTS
 bool B_PLUS_TREE_LEAF_PAGE_TYPE::Lookup(const KeyType &key, ValueType &value,
-                                        const KeyComparator &comparator) const {
+                                        const KeyComparator &comparator) const
+{
   return false;
 }
 
@@ -117,7 +124,8 @@ bool B_PLUS_TREE_LEAF_PAGE_TYPE::Lookup(const KeyType &key, ValueType &value,
  */
 INDEX_TEMPLATE_ARGUMENTS
 int B_PLUS_TREE_LEAF_PAGE_TYPE::RemoveAndDeleteRecord(
-    const KeyType &key, const KeyComparator &comparator) {
+    const KeyType &key, const KeyComparator &comparator)
+{
   return 0;
 }
 
@@ -166,12 +174,15 @@ void B_PLUS_TREE_LEAF_PAGE_TYPE::CopyFirstFrom(
  * DEBUG
  *****************************************************************************/
 INDEX_TEMPLATE_ARGUMENTS
-std::string B_PLUS_TREE_LEAF_PAGE_TYPE::ToString(bool verbose) const {
-  if (GetSize() == 0) {
+std::string B_PLUS_TREE_LEAF_PAGE_TYPE::ToString(bool verbose) const
+{
+  if (GetSize() == 0)
+  {
     return "";
   }
   std::ostringstream stream;
-  if (verbose) {
+  if (verbose)
+  {
     stream << "[pageId: " << GetPageId() << " parentId: " << GetParentPageId()
            << "]<" << GetSize() << "> ";
   }
@@ -179,14 +190,19 @@ std::string B_PLUS_TREE_LEAF_PAGE_TYPE::ToString(bool verbose) const {
   int end = GetSize();
   bool first = true;
 
-  while (entry < end) {
-    if (first) {
+  while (entry < end)
+  {
+    if (first)
+    {
       first = false;
-    } else {
+    }
+    else
+    {
       stream << " ";
     }
     stream << std::dec << array[entry].first;
-    if (verbose) {
+    if (verbose)
+    {
       stream << "(" << array[entry].second << ")";
     }
     ++entry;
@@ -195,13 +211,13 @@ std::string B_PLUS_TREE_LEAF_PAGE_TYPE::ToString(bool verbose) const {
 }
 
 template class BPlusTreeLeafPage<GenericKey<4>, RID,
-                                       GenericComparator<4>>;
+                                 GenericComparator<4>>;
 template class BPlusTreeLeafPage<GenericKey<8>, RID,
-                                       GenericComparator<8>>;
+                                 GenericComparator<8>>;
 template class BPlusTreeLeafPage<GenericKey<16>, RID,
-                                       GenericComparator<16>>;
+                                 GenericComparator<16>>;
 template class BPlusTreeLeafPage<GenericKey<32>, RID,
-                                       GenericComparator<32>>;
+                                 GenericComparator<32>>;
 template class BPlusTreeLeafPage<GenericKey<64>, RID,
-                                       GenericComparator<64>>;
+                                 GenericComparator<64>>;
 } // namespace cmudb

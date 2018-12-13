@@ -9,9 +9,11 @@
 
 #include "common/config.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class RID {
+class RID
+{
 public:
   RID() : page_id_(INVALID_PAGE_ID), slot_num_(-1){}; // invalid rid
   RID(page_id_t page_id, int slot_num)
@@ -25,12 +27,14 @@ public:
 
   inline int GetSlotNum() const { return slot_num_; }
 
-  inline void Set(page_id_t page_id, int slot_num) {
+  inline void Set(page_id_t page_id, int slot_num)
+  {
     page_id_ = page_id;
     slot_num_ = slot_num;
   }
 
-  inline std::string ToString() const {
+  inline std::string ToString() const
+  {
     std::stringstream os;
     os << "page_id: " << page_id_;
     os << " slot_num: " << slot_num_ << "\n";
@@ -38,12 +42,14 @@ public:
     return os.str();
   }
 
-  friend std::ostream &operator<<(std::ostream &os, const RID &rid) {
+  friend std::ostream &operator<<(std::ostream &os, const RID &rid)
+  {
     os << rid.ToString();
     return os;
   }
 
-  bool operator==(const RID &other) const {
+  bool operator==(const RID &other) const
+  {
     if ((page_id_ == other.page_id_) && (slot_num_ == other.slot_num_))
       return true;
     else
@@ -57,9 +63,13 @@ private:
 
 } // namespace cmudb
 
-namespace std {
-template <> struct hash<cmudb::RID> {
-  size_t operator()(const cmudb::RID &obj) const {
+namespace std
+{
+template <>
+struct hash<cmudb::RID>
+{
+  size_t operator()(const cmudb::RID &obj) const
+  {
     return hash<int64_t>()(obj.Get());
   }
 };

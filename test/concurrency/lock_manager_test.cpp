@@ -7,14 +7,15 @@
 #include "concurrency/transaction_manager.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
-
+namespace cmudb
+{
 
 /*
  * This test is only a sanity check. Please do not rely on this test
  * to check the correctness.
  */
-TEST(LockManagerTest, BasicTest) {
+TEST(LockManagerTest, BasicTest)
+{
   LockManager lock_mgr{false};
   TransactionManager txn_mgr{&lock_mgr};
   RID rid{0, 0};

@@ -6,7 +6,8 @@
 
 #include <cstdint>
 
-namespace cmudb {
+namespace cmudb
+{
 
 #define INVALID_PAGE_ID -1 // representing an invalid page id
 #define INVALID_TXN_ID -1  // representing an invalid txn id

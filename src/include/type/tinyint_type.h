@@ -4,9 +4,11 @@
 #pragma once
 #include "type/integer_parent_type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 // An integer value of the common sizes.
-class TinyintType : public IntegerParentType {
+class TinyintType : public IntegerParentType
+{
 public:
   ~TinyintType() {}
 

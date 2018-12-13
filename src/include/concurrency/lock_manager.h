@@ -15,9 +15,11 @@
 #include "common/rid.h"
 #include "concurrency/transaction.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class LockManager {
+class LockManager
+{
 
 public:
   LockManager(bool strict_2PL) : strict_2PL_(strict_2PL){};

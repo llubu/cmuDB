@@ -5,13 +5,15 @@
 #pragma once
 #include "page/b_plus_tree_leaf_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-#define INDEXITERATOR_TYPE                                                     \
+#define INDEXITERATOR_TYPE \
   IndexIterator<KeyType, ValueType, KeyComparator>
 
 INDEX_TEMPLATE_ARGUMENTS
-class IndexIterator {
+class IndexIterator
+{
 public:
   // you may define your own constructor based on your member variables
   IndexIterator();

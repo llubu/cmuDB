@@ -5,9 +5,11 @@
 #include "common/exception.h"
 #include "type/numeric_type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 // An integer value of the common sizes.
-class IntegerParentType : public NumericType {
+class IntegerParentType : public NumericType
+{
 public:
   ~IntegerParentType() {}
 
@@ -79,24 +81,29 @@ protected:
 };
 
 template <class T1, class T2>
-Value IntegerParentType::AddValue(const Value &left, const Value &right) const {
+Value IntegerParentType::AddValue(const Value &left, const Value &right) const
+{
   T1 x = left.GetAs<T1>();
   T2 y = right.GetAs<T2>();
   T1 sum1 = (T1)(x + y);
   T2 sum2 = (T2)(x + y);
 
-  if ((x + y) != sum1 && (x + y) != sum2) {
+  if ((x + y) != sum1 && (x + y) != sum2)
+  {
     throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE, "Numeric value out of range.");
   }
   // Overflow detection
-  if (sizeof(x) >= sizeof(y)) {
-    if ((x > 0 && y > 0 && sum1 < 0) || (x < 0 && y < 0 && sum1 > 0)) {
+  if (sizeof(x) >= sizeof(y))
+  {
+    if ((x > 0 && y > 0 && sum1 < 0) || (x < 0 && y < 0 && sum1 > 0))
+    {
       throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE,
                       "Numeric value out of range.");
     }
     return Value(left.GetTypeId(), sum1);
   }
-  if ((x > 0 && y > 0 && sum2 < 0) || (x < 0 && y < 0 && sum2 > 0)) {
+  if ((x > 0 && y > 0 && sum2 < 0) || (x < 0 && y < 0 && sum2 > 0))
+  {
     throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE, "Numeric value out of range.");
   }
   return Value(right.GetTypeId(), sum2);
@@ -104,23 +111,28 @@ Value IntegerParentType::AddValue(const Value &left, const Value &right) const {
 
 template <class T1, class T2>
 Value IntegerParentType::SubtractValue(const Value &left,
-                                       const Value &right) const {
+                                       const Value &right) const
+{
   T1 x = left.GetAs<T1>();
   T2 y = right.GetAs<T2>();
   T1 diff1 = (T1)(x - y);
   T2 diff2 = (T2)(x - y);
-  if ((x - y) != diff1 && (x - y) != diff2) {
+  if ((x - y) != diff1 && (x - y) != diff2)
+  {
     throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE, "Numeric value out of range.");
   }
   // Overflow detection
-  if (sizeof(x) >= sizeof(y)) {
-    if ((x > 0 && y < 0 && diff1 < 0) || (x < 0 && y > 0 && diff1 > 0)) {
+  if (sizeof(x) >= sizeof(y))
+  {
+    if ((x > 0 && y < 0 && diff1 < 0) || (x < 0 && y > 0 && diff1 > 0))
+    {
       throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE,
                       "Numeric value out of range.");
     }
     return Value(left.GetTypeId(), diff1);
   }
-  if ((x > 0 && y < 0 && diff2 < 0) || (x < 0 && y > 0 && diff2 > 0)) {
+  if ((x > 0 && y < 0 && diff2 < 0) || (x < 0 && y > 0 && diff2 > 0))
+  {
     throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE, "Numeric value out of range.");
   }
   return Value(right.GetTypeId(), diff2);
@@ -128,23 +140,28 @@ Value IntegerParentType::SubtractValue(const Value &left,
 
 template <class T1, class T2>
 Value IntegerParentType::MultiplyValue(const Value &left,
-                                       const Value &right) const {
+                                       const Value &right) const
+{
   T1 x = left.GetAs<T1>();
   T2 y = right.GetAs<T2>();
   T1 prod1 = (T1)(x * y);
   T2 prod2 = (T2)(x * y);
-  if ((x * y) != prod1 && (x * y) != prod2) {
+  if ((x * y) != prod1 && (x * y) != prod2)
+  {
     throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE, "Numeric value out of range.");
   }
   // Overflow detection
-  if (sizeof(x) >= sizeof(y)) {
-    if ((y != 0 && prod1 / y != x)) {
+  if (sizeof(x) >= sizeof(y))
+  {
+    if ((y != 0 && prod1 / y != x))
+    {
       throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE,
                       "Numeric value out of range.");
     }
     return Value(left.GetTypeId(), prod1);
   }
-  if (y != 0 && prod2 / y != x) {
+  if (y != 0 && prod2 / y != x)
+  {
     throw Exception(EXCEPTION_TYPE_OUT_OF_RANGE, "Numeric value out of range.");
   }
   return Value(right.GetTypeId(), prod2);
@@ -152,15 +169,18 @@ Value IntegerParentType::MultiplyValue(const Value &left,
 
 template <class T1, class T2>
 Value IntegerParentType::DivideValue(const Value &left,
-                                     const Value &right) const {
+                                     const Value &right) const
+{
   T1 x = left.GetAs<T1>();
   T2 y = right.GetAs<T2>();
-  if (y == 0) {
+  if (y == 0)
+  {
     throw Exception(EXCEPTION_TYPE_DIVIDE_BY_ZERO, "Division by zero.");
   }
   T1 quot1 = (T1)(x / y);
   T2 quot2 = (T2)(x / y);
-  if (sizeof(x) >= sizeof(y)) {
+  if (sizeof(x) >= sizeof(y))
+  {
     return Value(left.GetTypeId(), quot1);
   }
   return Value(right.GetTypeId(), quot2);
@@ -168,15 +188,18 @@ Value IntegerParentType::DivideValue(const Value &left,
 
 template <class T1, class T2>
 Value IntegerParentType::ModuloValue(const Value &left,
-                                     const Value &right) const {
+                                     const Value &right) const
+{
   T1 x = left.GetAs<T1>();
   T2 y = right.GetAs<T2>();
-  if (y == 0) {
+  if (y == 0)
+  {
     throw Exception(EXCEPTION_TYPE_DIVIDE_BY_ZERO, "Division by zero.");
   }
   T1 quot1 = (T1)(x % y);
   T2 quot2 = (T2)(x % y);
-  if (sizeof(x) >= sizeof(y)) {
+  if (sizeof(x) >= sizeof(y))
+  {
     return Value(left.GetTypeId(), quot1);
   }
   return Value(right.GetTypeId(), quot2);

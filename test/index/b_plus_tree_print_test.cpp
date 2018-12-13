@@ -12,9 +12,11 @@
 #include "vtable/virtual_table.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-std::string usageMessage() {
+std::string usageMessage()
+{
   std::string message =
       "Enter any of the following commands after the prompt > :\n"
       "\ti <k>  -- Insert <k> (int64_t) as both key and value).\n"
@@ -31,7 +33,8 @@ std::string usageMessage() {
   return message;
 }
 
-TEST(BptTreeTest, UnitTest) {
+TEST(BptTreeTest, UnitTest)
+{
   int64_t key = 0;
   GenericKey<8> index_key;
   RID rid;
@@ -55,10 +58,12 @@ TEST(BptTreeTest, UnitTest) {
                                                            comparator);
   // create transaction
   Transaction *transaction = new Transaction(0);
-  while (!quit) {
+  while (!quit)
+  {
     std::cout << "> ";
     std::cin >> instruction;
-    switch (instruction) {
+    switch (instruction)
+    {
     case 'd':
       std::cin >> filename;
       tree.RemoveFromFile(filename, transaction);

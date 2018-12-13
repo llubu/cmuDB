@@ -8,13 +8,20 @@
 
 #include "type/type_id.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 class Value;
 
-enum CmpBool { CMP_FALSE = 0, CMP_TRUE = 1, CMP_NULL = 2 };
+enum CmpBool
+{
+  CMP_FALSE = 0,
+  CMP_TRUE = 1,
+  CMP_NULL = 2
+};
 
-class Type {
+class Type
+{
 public:
   Type(TypeId type_id) : type_id_(type_id) {}
 

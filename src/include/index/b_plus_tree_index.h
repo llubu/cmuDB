@@ -11,12 +11,14 @@
 #include "index/b_plus_tree.h"
 #include "index/index.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 #define BPLUSTREE_INDEX_TYPE BPlusTreeIndex<KeyType, ValueType, KeyComparator>
 
 INDEX_TEMPLATE_ARGUMENTS
-class BPlusTreeIndex : public Index {
+class BPlusTreeIndex : public Index
+{
 
 public:
   BPlusTreeIndex(IndexMetadata *metadata,

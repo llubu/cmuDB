@@ -22,18 +22,25 @@
 #include "buffer/buffer_pool_manager.h"
 #include "index/generic_key.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 #define MappingType std::pair<KeyType, ValueType>
 
-#define INDEX_TEMPLATE_ARGUMENTS                                               \
+#define INDEX_TEMPLATE_ARGUMENTS \
   template <typename KeyType, typename ValueType, typename KeyComparator>
 
 // define page type enum
-enum class IndexPageType { INVALID_INDEX_PAGE = 0, LEAF_PAGE, INTERNAL_PAGE };
+enum class IndexPageType
+{
+  INVALID_INDEX_PAGE = 0,
+  LEAF_PAGE,
+  INTERNAL_PAGE
+};
 
 // Abstract class.
-class BPlusTreePage {
+class BPlusTreePage
+{
 public:
   bool IsLeafPage() const;
   bool IsRootPage() const;

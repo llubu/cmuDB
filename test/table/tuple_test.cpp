@@ -14,9 +14,11 @@
 #include "vtable/virtual_table.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-TEST(TupleTest, TableHeapTest) {
+TEST(TupleTest, TableHeapTest)
+{
   // test1: parse create sql statement
   std::string createStmt =
       "a varchar, b smallint, c bigint, d bool, e varchar(16)";
@@ -24,10 +26,12 @@ TEST(TupleTest, TableHeapTest) {
   // test2: create one tuple
   std::vector<Value> values;
   Value v(TypeId::INVALID);
-  for (int i = 0; i < schema->GetColumnCount(); i++) {
+  for (int i = 0; i < schema->GetColumnCount(); i++)
+  {
     // get type
     TypeId type = schema->GetType(i);
-    switch (type) {
+    switch (type)
+    {
     case TypeId::BOOLEAN:
       v = Value(type, 0);
       break;
@@ -61,21 +65,24 @@ TEST(TupleTest, TableHeapTest) {
 
   RID rid;
   std::vector<RID> rid_v;
-  for (int i = 0; i < 2000; ++i) {
+  for (int i = 0; i < 2000; ++i)
+  {
     table->InsertTuple(tuple, rid, transaction);
     // std::cout << rid << '\n';
     rid_v.push_back(rid);
   }
 
   TableIterator itr = table->begin(transaction);
-  while (itr != table->end()) {
+  while (itr != table->end())
+  {
     // std::cout << itr->ToString(schema) << std::endl;
     ++itr;
   }
 
   // int i = 0;
   std::random_shuffle(rid_v.begin(), rid_v.end());
-  for (auto rid : rid_v) {
+  for (auto rid : rid_v)
+  {
     // std::cout << i++ << std::endl;
     assert(table->MarkDelete(rid, transaction) == 1);
   }

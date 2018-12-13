@@ -12,12 +12,14 @@
 
 #include "type/type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 //===--------------------------------------------------------------------===//
 // Exception Types
 //===--------------------------------------------------------------------===//
 
-enum ExceptionType {
+enum ExceptionType
+{
   EXCEPTION_TYPE_INVALID = 0,           // invalid type
   EXCEPTION_TYPE_OUT_OF_RANGE = 1,      // value out of range error
   EXCEPTION_TYPE_CONVERSION = 2,        // conversion/casting error
@@ -43,24 +45,29 @@ enum ExceptionType {
   EXCEPTION_TYPE_SYNTAX = 22,           // syntax related
 };
 
-class Exception : public std::runtime_error {
+class Exception : public std::runtime_error
+{
 public:
   Exception(std::string message)
-      : std::runtime_error(message), type(EXCEPTION_TYPE_INVALID) {
+      : std::runtime_error(message), type(EXCEPTION_TYPE_INVALID)
+  {
     std::string exception_message = "Message :: " + message + "\n";
     std::cerr << exception_message;
   }
 
   Exception(ExceptionType exception_type, std::string message)
-      : std::runtime_error(message), type(exception_type) {
+      : std::runtime_error(message), type(exception_type)
+  {
     std::string exception_message = "\nException Type :: " +
                                     ExpectionTypeToString(exception_type) +
                                     "\nMessage :: " + message + "\n";
     std::cerr << exception_message;
   }
 
-  std::string ExpectionTypeToString(ExceptionType type) {
-    switch (type) {
+  std::string ExpectionTypeToString(ExceptionType type)
+  {
+    switch (type)
+    {
     case EXCEPTION_TYPE_INVALID:
       return "Invalid";
     case EXCEPTION_TYPE_OUT_OF_RANGE:
@@ -121,7 +128,8 @@ private:
 // Exception derived classes
 //===--------------------------------------------------------------------===//
 
-class CastException : public Exception {
+class CastException : public Exception
+{
   CastException() = delete;
 
 public:
@@ -131,7 +139,8 @@ public:
                       " can't be cast as " + Type::TypeIdToString(newType)) {}
 };
 
-class ValueOutOfRangeException : public Exception {
+class ValueOutOfRangeException : public Exception
+{
   ValueOutOfRangeException() = delete;
 
 public:
@@ -142,7 +151,9 @@ public:
                       std::to_string((intmax_t)value) +
                       " can't be cast as %s because the value is out of range "
                       "for the destination type " +
-                      Type::TypeIdToString(newType)) {}
+                      Type::TypeIdToString(newType))
+  {
+  }
 
   ValueOutOfRangeException(const double value, const TypeId origType,
                            const TypeId newType)
@@ -151,7 +162,9 @@ public:
                       std::to_string(value) +
                       " can't be cast as %s because the value is out of range "
                       "for the destination type " +
-                      Type::TypeIdToString(newType)) {}
+                      Type::TypeIdToString(newType))
+  {
+  }
 
   ValueOutOfRangeException(const TypeId varType, const size_t length)
       : Exception(EXCEPTION_TYPE_OUT_OF_RANGE,
@@ -160,7 +173,8 @@ public:
                       std::to_string(length) + ")"){};
 };
 
-class ConversionException : public Exception {
+class ConversionException : public Exception
+{
   ConversionException() = delete;
 
 public:
@@ -168,7 +182,8 @@ public:
       : Exception(EXCEPTION_TYPE_CONVERSION, msg) {}
 };
 
-class UnknownTypeException : public Exception {
+class UnknownTypeException : public Exception
+{
   UnknownTypeException() = delete;
 
 public:
@@ -177,14 +192,16 @@ public:
                   "unknown type " + std::to_string(type) + msg) {}
 };
 
-class DecimalException : public Exception {
+class DecimalException : public Exception
+{
   DecimalException() = delete;
 
 public:
   DecimalException(std::string msg) : Exception(EXCEPTION_TYPE_DECIMAL, msg) {}
 };
 
-class TypeMismatchException : public Exception {
+class TypeMismatchException : public Exception
+{
   TypeMismatchException() = delete;
 
 public:
@@ -196,7 +213,8 @@ public:
                       msg) {}
 };
 
-class NumericValueOutOfRangeException : public Exception {
+class NumericValueOutOfRangeException : public Exception
+{
   NumericValueOutOfRangeException() = delete;
 
 public:
@@ -209,7 +227,8 @@ public:
                   msg + " " + std::to_string(type)) {}
 };
 
-class DivideByZeroException : public Exception {
+class DivideByZeroException : public Exception
+{
   DivideByZeroException() = delete;
 
 public:
@@ -217,7 +236,8 @@ public:
       : Exception(EXCEPTION_TYPE_DIVIDE_BY_ZERO, msg) {}
 };
 
-class ObjectSizeException : public Exception {
+class ObjectSizeException : public Exception
+{
   ObjectSizeException() = delete;
 
 public:
@@ -225,7 +245,8 @@ public:
       : Exception(EXCEPTION_TYPE_OBJECT_SIZE, msg) {}
 };
 
-class IncompatibleTypeException : public Exception {
+class IncompatibleTypeException : public Exception
+{
   IncompatibleTypeException() = delete;
 
 public:
@@ -235,7 +256,8 @@ public:
                       Type::TypeIdToString(static_cast<TypeId>(type)) + msg) {}
 };
 
-class SerializationException : public Exception {
+class SerializationException : public Exception
+{
   SerializationException() = delete;
 
 public:
@@ -243,7 +265,8 @@ public:
       : Exception(EXCEPTION_TYPE_SERIALIZATION, msg) {}
 };
 
-class TransactionException : public Exception {
+class TransactionException : public Exception
+{
   TransactionException() = delete;
 
 public:
@@ -251,7 +274,8 @@ public:
       : Exception(EXCEPTION_TYPE_TRANSACTION, msg) {}
 };
 
-class NotImplementedException : public Exception {
+class NotImplementedException : public Exception
+{
   NotImplementedException() = delete;
 
 public:
@@ -259,7 +283,8 @@ public:
       : Exception(EXCEPTION_TYPE_NOT_IMPLEMENTED, msg) {}
 };
 
-class ExpressionException : public Exception {
+class ExpressionException : public Exception
+{
   ExpressionException() = delete;
 
 public:
@@ -267,28 +292,32 @@ public:
       : Exception(EXCEPTION_TYPE_EXPRESSION, msg) {}
 };
 
-class CatalogException : public Exception {
+class CatalogException : public Exception
+{
   CatalogException() = delete;
 
 public:
   CatalogException(std::string msg) : Exception(EXCEPTION_TYPE_CATALOG, msg) {}
 };
 
-class ParserException : public Exception {
+class ParserException : public Exception
+{
   ParserException() = delete;
 
 public:
   ParserException(std::string msg) : Exception(EXCEPTION_TYPE_PARSER, msg) {}
 };
 
-class PlannerException : public Exception {
+class PlannerException : public Exception
+{
   PlannerException() = delete;
 
 public:
   PlannerException(std::string msg) : Exception(EXCEPTION_TYPE_PLANNER, msg) {}
 };
 
-class SchedulerException : public Exception {
+class SchedulerException : public Exception
+{
   SchedulerException() = delete;
 
 public:
@@ -296,7 +325,8 @@ public:
       : Exception(EXCEPTION_TYPE_SCHEDULER, msg) {}
 };
 
-class ExecutorException : public Exception {
+class ExecutorException : public Exception
+{
   ExecutorException() = delete;
 
 public:
@@ -304,14 +334,16 @@ public:
       : Exception(EXCEPTION_TYPE_EXECUTOR, msg) {}
 };
 
-class SyntaxException : public Exception {
+class SyntaxException : public Exception
+{
   SyntaxException() = delete;
 
 public:
   SyntaxException(std::string msg) : Exception(EXCEPTION_TYPE_SYNTAX, msg) {}
 };
 
-class ConstraintException : public Exception {
+class ConstraintException : public Exception
+{
   ConstraintException() = delete;
 
 public:
@@ -319,21 +351,24 @@ public:
       : Exception(EXCEPTION_TYPE_CONSTRAINT, msg) {}
 };
 
-class IndexException : public Exception {
+class IndexException : public Exception
+{
   IndexException() = delete;
 
 public:
   IndexException(std::string msg) : Exception(EXCEPTION_TYPE_INDEX, msg) {}
 };
 
-class StatException : public Exception {
+class StatException : public Exception
+{
   StatException() = delete;
 
 public:
   StatException(std::string msg) : Exception(EXCEPTION_TYPE_STAT, msg) {}
 };
 
-class ConnectionException : public Exception {
+class ConnectionException : public Exception
+{
   ConnectionException() = delete;
 
 public:

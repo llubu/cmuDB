@@ -27,9 +27,11 @@
 #include "page/page.h"
 #include "table/tuple.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class TablePage : public Page {
+class TablePage : public Page
+{
 public:
   /**
    * Header related

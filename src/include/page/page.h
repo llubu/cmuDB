@@ -14,9 +14,11 @@
 #include "common/config.h"
 #include "common/rwmutex.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class Page {
+class Page
+{
   friend class BufferPoolManager;
 
 public:

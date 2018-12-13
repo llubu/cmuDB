@@ -6,9 +6,12 @@
 
 #pragma once
 
-namespace cmudb {
+namespace cmudb
+{
 
-template <typename K, typename V> class HashTable {
+template <typename K, typename V>
+class HashTable
+{
 public:
   HashTable() {}
   virtual ~HashTable() {}

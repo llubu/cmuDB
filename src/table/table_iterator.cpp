@@ -6,26 +6,32 @@
 
 #include "table/table_heap.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 TableIterator::TableIterator(TableHeap *table_heap, RID rid, Transaction *txn)
-    : table_heap_(table_heap), tuple_(new Tuple(rid)), txn_(txn) {
-  if (rid.GetPageId() != INVALID_PAGE_ID) {
+    : table_heap_(table_heap), tuple_(new Tuple(rid)), txn_(txn)
+{
+  if (rid.GetPageId() != INVALID_PAGE_ID)
+  {
     table_heap_->GetTuple(tuple_->rid_, *tuple_, txn_);
   }
 };
 
-const Tuple &TableIterator::operator*() {
+const Tuple &TableIterator::operator*()
+{
   assert(*this != table_heap_->end());
   return *tuple_;
 }
 
-Tuple *TableIterator::operator->() {
+Tuple *TableIterator::operator->()
+{
   assert(*this != table_heap_->end());
   return tuple_;
 }
 
-TableIterator &TableIterator::operator++() {
+TableIterator &TableIterator::operator++()
+{
   BufferPoolManager *buffer_pool_manager = table_heap_->buffer_pool_manager_;
   auto cur_page = static_cast<TablePage *>(
       buffer_pool_manager->FetchPage(tuple_->rid_.GetPageId()));
@@ -34,8 +40,10 @@ TableIterator &TableIterator::operator++() {
 
   RID next_tuple_rid;
   if (!cur_page->GetNextTupleRid(tuple_->rid_,
-                                 next_tuple_rid)) { // end of this page
-    while (cur_page->GetNextPageId() != INVALID_PAGE_ID) {
+                                 next_tuple_rid))
+  { // end of this page
+    while (cur_page->GetNextPageId() != INVALID_PAGE_ID)
+    {
       auto next_page = static_cast<TablePage *>(
           buffer_pool_manager->FetchPage(cur_page->GetNextPageId()));
       cur_page->RUnlatch();
@@ -48,7 +56,8 @@ TableIterator &TableIterator::operator++() {
   }
   tuple_->rid_ = next_tuple_rid;
 
-  if (*this != table_heap_->end()) {
+  if (*this != table_heap_->end())
+  {
     table_heap_->GetTuple(tuple_->rid_, *tuple_, txn_);
   }
   // release until copy the tuple
@@ -57,7 +66,8 @@ TableIterator &TableIterator::operator++() {
   return *this;
 }
 
-TableIterator TableIterator::operator++(int) {
+TableIterator TableIterator::operator++(int)
+{
   TableIterator clone(*this);
   ++(*this);
   return clone;

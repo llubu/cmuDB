@@ -13,9 +13,11 @@
 #include "common/rid.h"
 #include "type/value.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class Tuple {
+class Tuple
+{
   friend class TablePage;
 
   friend class TableHeap;
@@ -32,7 +34,8 @@ public:
   // copy constructor, deep copy
   Tuple(const Tuple &other);
 
-  ~Tuple() {
+  ~Tuple()
+  {
     if (allocated_)
       delete[] data_;
   }
@@ -51,7 +54,8 @@ public:
   Value GetValue(Schema *schema, const int column_id) const;
 
   // Is the column value null ?
-  inline bool IsNull(Schema *schema, const int column_id) const {
+  inline bool IsNull(Schema *schema, const int column_id) const
+  {
     Value value = GetValue(schema, column_id);
     return value.IsNull();
   }

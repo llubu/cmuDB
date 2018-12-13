@@ -10,8 +10,10 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace cmudb {
-class RWMutex {
+namespace cmudb
+{
+class RWMutex
+{
 
   typedef std::mutex mutex_t;
   typedef std::condition_variable cond_t;
@@ -25,7 +27,8 @@ public:
   RWMutex(const RWMutex &) = delete;
   RWMutex &operator=(const RWMutex &) = delete;
 
-  void WLock() {
+  void WLock()
+  {
     std::unique_lock<mutex_t> lock(mutex_);
     while (writer_entered_)
       reader_.wait(lock);
@@ -34,26 +37,32 @@ public:
       writer_.wait(lock);
   }
 
-  void WUnlock() {
+  void WUnlock()
+  {
     std::lock_guard<mutex_t> guard(mutex_);
     writer_entered_ = false;
     reader_.notify_all();
   }
 
-  void RLock() {
+  void RLock()
+  {
     std::unique_lock<mutex_t> lock(mutex_);
     while (writer_entered_ || reader_count_ == max_readers_)
       reader_.wait(lock);
     reader_count_++;
   }
 
-  void RUnlock() {
+  void RUnlock()
+  {
     std::lock_guard<mutex_t> guard(mutex_);
     reader_count_--;
-    if (writer_entered_) {
+    if (writer_entered_)
+    {
       if (reader_count_ == 0)
         writer_.notify_one();
-    } else {
+    }
+    else
+    {
       if (reader_count_ == max_readers_ - 1)
         reader_.notify_one();
     }

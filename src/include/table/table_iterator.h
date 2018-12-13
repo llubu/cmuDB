@@ -11,11 +11,13 @@
 #include "common/rid.h"
 #include "table/tuple.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 class TableHeap;
 
-class TableIterator {
+class TableIterator
+{
   friend class Cursor;
 
 public:
@@ -23,11 +25,13 @@ public:
 
   ~TableIterator() { delete tuple_; }
 
-  inline bool operator==(const TableIterator &itr) const {
+  inline bool operator==(const TableIterator &itr) const
+  {
     return tuple_->rid_.Get() == itr.tuple_->rid_.Get();
   }
 
-  inline bool operator!=(const TableIterator &itr) const {
+  inline bool operator!=(const TableIterator &itr) const
+  {
     return !(*this == itr);
   }
 

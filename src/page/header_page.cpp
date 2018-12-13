@@ -6,13 +6,15 @@
 
 #include "page/header_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /**
  * Record related
  */
 bool HeaderPage::InsertRecord(const std::string &name,
-                              const page_id_t root_id) {
+                              const page_id_t root_id)
+{
   assert(name.length() < 32);
   assert(root_id > INVALID_PAGE_ID);
 
@@ -29,7 +31,8 @@ bool HeaderPage::InsertRecord(const std::string &name,
   return true;
 }
 
-bool HeaderPage::DeleteRecord(const std::string &name) {
+bool HeaderPage::DeleteRecord(const std::string &name)
+{
   int record_num = GetRecordCount();
   assert(record_num > 0);
 
@@ -46,7 +49,8 @@ bool HeaderPage::DeleteRecord(const std::string &name) {
 }
 
 bool HeaderPage::UpdateRecord(const std::string &name,
-                              const page_id_t root_id) {
+                              const page_id_t root_id)
+{
   assert(name.length() < 32);
 
   int index = FindRecord(name);
@@ -60,7 +64,8 @@ bool HeaderPage::UpdateRecord(const std::string &name,
   return true;
 }
 
-bool HeaderPage::GetRootId(const std::string &name, page_id_t &root_id) {
+bool HeaderPage::GetRootId(const std::string &name, page_id_t &root_id)
+{
   assert(name.length() < 32);
 
   int index = FindRecord(name);
@@ -79,14 +84,17 @@ bool HeaderPage::GetRootId(const std::string &name, page_id_t &root_id) {
 // record count
 int HeaderPage::GetRecordCount() { return *reinterpret_cast<int *>(GetData()); }
 
-void HeaderPage::SetRecordCount(int record_count) {
+void HeaderPage::SetRecordCount(int record_count)
+{
   memcpy(GetData(), &record_count, 4);
 }
 
-int HeaderPage::FindRecord(const std::string &name) {
+int HeaderPage::FindRecord(const std::string &name)
+{
   int record_num = GetRecordCount();
 
-  for (int i = 0; i < record_num; i++) {
+  for (int i = 0; i < record_num; i++)
+  {
     char *raw_name = reinterpret_cast<char *>(GetData() + (4 + i * 36));
     if (strcmp(raw_name, name.c_str()) == 0)
       return i;

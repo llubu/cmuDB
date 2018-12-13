@@ -18,17 +18,19 @@
 #include "page/b_plus_tree_internal_page.h"
 #include "page/b_plus_tree_leaf_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 #define BPLUSTREE_TYPE BPlusTree<KeyType, ValueType, KeyComparator>
 // Main class providing the API for the Interactive B+ Tree.
 INDEX_TEMPLATE_ARGUMENTS
-class BPlusTree {
+class BPlusTree
+{
 public:
   explicit BPlusTree(const std::string &name,
-                           BufferPoolManager *buffer_pool_manager,
-                           const KeyComparator &comparator,
-                           page_id_t root_page_id = INVALID_PAGE_ID);
+                     BufferPoolManager *buffer_pool_manager,
+                     const KeyComparator &comparator,
+                     page_id_t root_page_id = INVALID_PAGE_ID);
 
   // Returns true if this B+ tree has no keys and values.
   bool IsEmpty() const;
@@ -72,7 +74,8 @@ private:
                         BPlusTreePage *new_node,
                         Transaction *transaction = nullptr);
 
-  template <typename N> N *Split(N *node);
+  template <typename N>
+  N *Split(N *node);
 
   template <typename N>
   bool CoalesceOrRedistribute(N *node, Transaction *transaction = nullptr);
@@ -83,7 +86,8 @@ private:
       BPlusTreeInternalPage<KeyType, page_id_t, KeyComparator> *&parent,
       int index, Transaction *transaction = nullptr);
 
-  template <typename N> void Redistribute(N *neighbor_node, N *node, int index);
+  template <typename N>
+  void Redistribute(N *neighbor_node, N *node, int index);
 
   bool AdjustRoot(BPlusTreePage *node);
 

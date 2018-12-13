@@ -4,9 +4,11 @@
 #pragma once
 #include "type/integer_parent_type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 // An integer value of the common sizes.
-class BigintType : public IntegerParentType {
+class BigintType : public IntegerParentType
+{
 public:
   ~BigintType() {}
 

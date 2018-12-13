@@ -11,13 +11,16 @@
 #include "table/table_iterator.h"
 #include "table/tuple.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class TableHeap {
+class TableHeap
+{
   friend class TableIterator;
 
 public:
-  ~TableHeap() {
+  ~TableHeap()
+  {
     // when destruct table heap, flush all pages within buffer pool
     buffer_pool_manager_->FlushAllPages();
   }
@@ -29,7 +32,7 @@ public:
   // for insert, if tuple is too large (>~page_size), return false
   bool InsertTuple(const Tuple &tuple, RID &rid, Transaction *txn);
 
-  bool MarkDelete(const RID &rid, Transaction *txn);  // for delete
+  bool MarkDelete(const RID &rid, Transaction *txn); // for delete
 
   // if the new tuple is too large to fit in the old page, return false (will
   // delete and insert)
@@ -37,7 +40,7 @@ public:
 
   // commit/abort time
   void ApplyDelete(const RID &rid,
-                   Transaction *txn); // when commit delete or rollback insert
+                   Transaction *txn);                    // when commit delete or rollback insert
   void RollbackDelete(const RID &rid, Transaction *txn); // when rollback delete
 
   bool GetTuple(const RID &rid, Tuple &tuple, Transaction *txn);

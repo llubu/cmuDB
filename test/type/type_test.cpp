@@ -5,24 +5,33 @@
 #include "type/value.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 //===--------------------------------------------------------------------===//
 // Type Tests
 //===--------------------------------------------------------------------===//
 const std::vector<TypeId> typeTestTypes = {
-    TypeId::BOOLEAN, TypeId::TINYINT, TypeId::SMALLINT,
-    TypeId::INTEGER, TypeId::BIGINT,  TypeId::DECIMAL,
+    TypeId::BOOLEAN,
+    TypeId::TINYINT,
+    TypeId::SMALLINT,
+    TypeId::INTEGER,
+    TypeId::BIGINT,
+    TypeId::DECIMAL,
 };
 
-template <typename KeyType, typename ValueType> class BPlusTreePage {
+template <typename KeyType, typename ValueType>
+class BPlusTreePage
+{
 public:
-  void GetInfo(KeyType key, ValueType val) {
+  void GetInfo(KeyType key, ValueType val)
+  {
     if (key.CompareEquals(val) == CMP_TRUE)
       std::cout << "key info" << key.ToString() << '\n';
   }
 };
 
-TEST(TypeTests, InvalidTypeTest) {
+TEST(TypeTests, InvalidTypeTest)
+{
   // First get the INVALID type instance
   TypeId type_id = TypeId::INVALID;
   auto t = Type::GetInstance(type_id);
@@ -37,8 +46,10 @@ TEST(TypeTests, InvalidTypeTest) {
   EXPECT_THROW(Type::GetMaxValue(type_id), Exception);
 }
 
-TEST(TypeTests, GetInstanceTest) {
-  for (auto col_type : typeTestTypes) {
+TEST(TypeTests, GetInstanceTest)
+{
+  for (auto col_type : typeTestTypes)
+  {
     auto t = Type::GetInstance(col_type);
     EXPECT_NE(nullptr, t);
     EXPECT_EQ(col_type, t->GetTypeId());
@@ -46,8 +57,10 @@ TEST(TypeTests, GetInstanceTest) {
   }
 }
 
-TEST(TypeTests, MaxValueTest) {
-  for (auto col_type : typeTestTypes) {
+TEST(TypeTests, MaxValueTest)
+{
+  for (auto col_type : typeTestTypes)
+  {
     auto maxVal = Type::GetMaxValue(col_type);
     EXPECT_FALSE(maxVal.IsNull());
     // TODO: We should not be allowed to create a value that is greater than
@@ -55,8 +68,10 @@ TEST(TypeTests, MaxValueTest) {
   }
 }
 
-TEST(TypeTests, MinValueTest) {
-  for (auto col_type : typeTestTypes) {
+TEST(TypeTests, MinValueTest)
+{
+  for (auto col_type : typeTestTypes)
+  {
     auto minVal = Type::GetMinValue(col_type);
     EXPECT_FALSE(minVal.IsNull());
     // TODO: We should not be allowed to create a value that is less than
@@ -68,7 +83,8 @@ TEST(TypeTests, MinValueTest) {
   EXPECT_EQ(val1.CompareEquals(val2), CMP_TRUE);
 }
 
-TEST(TypeTests, TemplateTest) {
+TEST(TypeTests, TemplateTest)
+{
   std::string temp = "32";
   Value val1(TypeId::INTEGER, 32);
   Value val2(TypeId::INTEGER, 32);

@@ -13,7 +13,8 @@
 #include "table/tuple.h"
 #include "type/value.h"
 
-namespace cmudb {
+namespace cmudb
+{
 /* Helpers */
 Schema *ParseCreateStatement(const std::string &sql);
 
@@ -59,7 +60,8 @@ int VtabCommit(sqlite3_vtab *pVTab);
 int VtabBegin(sqlite3_vtab *pVTab);
 
 // global parameters
-struct GlobalParameters {
+struct GlobalParameters
+{
   BufferPoolManager *buffer_pool_manager_;
   LockManager *lock_manager_;
   TransactionManager *transaction_manager_;
@@ -69,31 +71,36 @@ struct GlobalParameters {
 
 GlobalParameters *global_parameters;
 
-class VirtualTable {
+class VirtualTable
+{
   friend class Cursor;
 
 public:
   VirtualTable(Schema *schema, BufferPoolManager *buffer_pool_manager,
                LockManager *lock_manager, Index *index,
                page_id_t first_page_id = INVALID_PAGE_ID)
-      : schema_(schema), index_(index) {
+      : schema_(schema), index_(index)
+  {
     table_heap_ =
         new TableHeap(buffer_pool_manager, lock_manager, first_page_id);
   }
 
-  ~VirtualTable() {
+  ~VirtualTable()
+  {
     delete schema_;
     delete table_heap_;
     delete index_;
   }
 
   // insert into table heap
-  inline bool InsertTuple(const Tuple &tuple, RID &rid) {
+  inline bool InsertTuple(const Tuple &tuple, RID &rid)
+  {
     return table_heap_->InsertTuple(tuple, rid, GetTransaction());
   }
 
   // insert into index
-  inline void InsertEntry(const Tuple &tuple, const RID &rid) {
+  inline void InsertEntry(const Tuple &tuple, const RID &rid)
+  {
     if (index_ == nullptr)
       return;
     // construct indexed key tuple
@@ -107,12 +114,14 @@ public:
 
   // delete from table heap
   // TODO: call makrdelete method from heaptable
-  inline bool DeleteTuple(const RID &rid) {
+  inline bool DeleteTuple(const RID &rid)
+  {
     return table_heap_->MarkDelete(rid, GetTransaction());
   }
 
   // delete from index
-  inline void DeleteEntry(const RID &rid) {
+  inline void DeleteEntry(const RID &rid)
+  {
     if (index_ == nullptr)
       return;
     Tuple deleted_tuple(rid);
@@ -127,7 +136,8 @@ public:
   }
 
   // update table heap tuple
-  inline bool UpdateTuple(const Tuple &tuple, const RID &rid) {
+  inline bool UpdateTuple(const Tuple &tuple, const RID &rid)
+  {
     // if failed try to delete and insert
     return table_heap_->UpdateTuple(tuple, rid, GetTransaction());
   }
@@ -154,13 +164,16 @@ private:
   Index *index_ = nullptr;
 };
 
-class Cursor {
+class Cursor
+{
 public:
   Cursor(VirtualTable *virtual_table)
-      : table_iterator_(virtual_table->begin()), virtual_table_(virtual_table) {
+      : table_iterator_(virtual_table->begin()), virtual_table_(virtual_table)
+  {
   }
 
-  inline void SetScanFlag(bool is_index_scan) {
+  inline void SetScanFlag(bool is_index_scan)
+  {
     is_index_scan_ = is_index_scan;
   }
 
@@ -168,11 +181,13 @@ public:
 
   inline VirtualTable *GetVirtualTable() { return virtual_table_; }
 
-  inline Schema *GetKeySchema() {
+  inline Schema *GetKeySchema()
+  {
     return virtual_table_->index_->GetKeySchema();
   }
   // return rid at which cursor is currently pointed
-  inline int64_t GetCurrentRid() {
+  inline int64_t GetCurrentRid()
+  {
     if (is_index_scan_)
       return results[offset_].Get();
     else
@@ -180,19 +195,24 @@ public:
   }
 
   // return tuple at which cursor is currently pointed
-  inline Value GetCurrentValue(Schema *schema, int column) {
-    if (is_index_scan_) {
+  inline Value GetCurrentValue(Schema *schema, int column)
+  {
+    if (is_index_scan_)
+    {
       RID rid = results[offset_];
       Tuple tuple(rid);
       virtual_table_->table_heap_->GetTuple(rid, tuple, GetTransaction());
       return tuple.GetValue(schema, column);
-    } else {
+    }
+    else
+    {
       return table_iterator_->GetValue(schema, column);
     }
   }
 
   // move cursor up to next
-  Cursor &operator++() {
+  Cursor &operator++()
+  {
     if (is_index_scan_)
       ++offset_;
     else
@@ -200,7 +220,8 @@ public:
     return *this;
   }
   // is end of cursor(no more tuple)
-  inline bool isEof() {
+  inline bool isEof()
+  {
     if (is_index_scan_)
       return offset_ == static_cast<int>(results.size());
     else
@@ -208,7 +229,8 @@ public:
   }
 
   // wrapper around poit scan methods
-  inline void ScanKey(const Tuple &key) {
+  inline void ScanKey(const Tuple &key)
+  {
     virtual_table_->index_->ScanKey(key, results);
   }
 

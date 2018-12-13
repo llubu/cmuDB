@@ -15,8 +15,10 @@
 #include "hash/extendible_hash.h"
 #include "page/page.h"
 
-namespace cmudb {
-class BufferPoolManager {
+namespace cmudb
+{
+class BufferPoolManager
+{
 public:
   BufferPoolManager(size_t pool_size, const std::string &db_file);
 

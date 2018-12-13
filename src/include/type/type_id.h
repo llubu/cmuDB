@@ -1,8 +1,10 @@
 #pragma once
 
-namespace cmudb {
+namespace cmudb
+{
 // Every possible SQL type ID
-enum TypeId {
+enum TypeId
+{
   INVALID = 0,
   BOOLEAN,
   TINYINT,

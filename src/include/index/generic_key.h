@@ -14,28 +14,37 @@
 #include "table/tuple.h"
 #include "type/value.h"
 
-namespace cmudb {
-template <size_t KeySize> class GenericKey {
+namespace cmudb
+{
+template <size_t KeySize>
+class GenericKey
+{
 public:
-  inline void SetFromKey(const Tuple &tuple) {
+  inline void SetFromKey(const Tuple &tuple)
+  {
     // intialize to 0
     memset(data, 0, KeySize);
     memcpy(data, tuple.GetData(), tuple.GetLength());
   }
 
   // NOTE: for test purpose only
-  inline void SetFromInteger(int64_t key) {
+  inline void SetFromInteger(int64_t key)
+  {
     memset(data, 0, KeySize);
     memcpy(data, &key, sizeof(int64_t));
   }
 
-  inline Value ToValue(Schema *schema, int column_id) const {
+  inline Value ToValue(Schema *schema, int column_id) const
+  {
     const char *data_ptr;
     const TypeId column_type = schema->GetType(column_id);
     const bool is_inlined = schema->IsInlined(column_id);
-    if (is_inlined) {
+    if (is_inlined)
+    {
       data_ptr = (data + schema->GetOffset(column_id));
-    } else {
+    }
+    else
+    {
       int32_t offset = *reinterpret_cast<int32_t *>(
           const_cast<char *>(data + schema->GetOffset(column_id)));
       data_ptr = (data + offset);
@@ -45,13 +54,15 @@ public:
 
   // NOTE: for test purpose only
   // interpret the first 8 bytes as int64_t from data vector
-  inline int64_t ToString() const {
+  inline int64_t ToString() const
+  {
     return *reinterpret_cast<int64_t *>(const_cast<char *>(data));
   }
 
   // NOTE: for test purpose only
   // interpret the first 8 bytes as int64_t from data vector
-  friend std::ostream &operator<<(std::ostream &os, const GenericKey &key) {
+  friend std::ostream &operator<<(std::ostream &os, const GenericKey &key)
+  {
     os << key.ToString();
     return os;
   }
@@ -63,13 +74,17 @@ public:
 /**
  * Function object returns true if lhs < rhs, used for trees
  */
-template <size_t KeySize> class GenericComparator {
+template <size_t KeySize>
+class GenericComparator
+{
 public:
   inline int operator()(const GenericKey<KeySize> &lhs,
-                        const GenericKey<KeySize> &rhs) const {
+                        const GenericKey<KeySize> &rhs) const
+  {
     int column_count = key_schema_->GetColumnCount();
 
-    for (int i = 0; i < column_count; i++) {
+    for (int i = 0; i < column_count; i++)
+    {
       Value lhs_value = (lhs.ToValue(key_schema_, i));
       Value rhs_value = (rhs.ToValue(key_schema_, i));
 
@@ -83,7 +98,8 @@ public:
     return 0;
   }
 
-  GenericComparator(const GenericComparator &other) {
+  GenericComparator(const GenericComparator &other)
+  {
     this->key_schema_ = other.key_schema_;
   }
 

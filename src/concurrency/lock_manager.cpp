@@ -4,21 +4,26 @@
 
 #include "concurrency/lock_manager.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-bool LockManager::LockShared(Transaction *txn, const RID &rid) {
+bool LockManager::LockShared(Transaction *txn, const RID &rid)
+{
   return false;
 }
 
-bool LockManager::LockExclusive(Transaction *txn, const RID &rid) {
+bool LockManager::LockExclusive(Transaction *txn, const RID &rid)
+{
   return false;
 }
 
-bool LockManager::LockUpgrade(Transaction *txn, const RID &rid) {
+bool LockManager::LockUpgrade(Transaction *txn, const RID &rid)
+{
   return false;
 }
 
-bool LockManager::Unlock(Transaction *txn, const RID &rid) {
+bool LockManager::Unlock(Transaction *txn, const RID &rid)
+{
   return false;
 }
 

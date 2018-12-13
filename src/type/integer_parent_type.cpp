@@ -6,10 +6,12 @@
 
 #include "type/integer_parent_type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 IntegerParentType::IntegerParentType(TypeId type) : NumericType(type) {}
 
-Value IntegerParentType::Min(const Value &left, const Value &right) const {
+Value IntegerParentType::Min(const Value &left, const Value &right) const
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
   if (left.IsNull() || right.IsNull())
@@ -20,7 +22,8 @@ Value IntegerParentType::Min(const Value &left, const Value &right) const {
   return right.Copy();
 }
 
-Value IntegerParentType::Max(const Value &left, const Value &right) const {
+Value IntegerParentType::Max(const Value &left, const Value &right) const
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
   if (left.IsNull() || right.IsNull())

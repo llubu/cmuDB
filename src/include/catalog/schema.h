@@ -10,9 +10,11 @@
 #include "catalog/column.h"
 #include "type/type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class Schema {
+class Schema
+{
 public:
   //===--------------------------------------------------------------------===//
   // Static factory methods to construct schema objects
@@ -32,22 +34,28 @@ public:
   // Schema accessors
   //===--------------------------------------------------------------------===//
 
-  inline int32_t GetOffset(const int column_id) const {
+  inline int32_t GetOffset(const int column_id) const
+  {
     return columns[column_id].GetOffset();
   }
 
-  inline TypeId GetType(const int column_id) const {
+  inline TypeId GetType(const int column_id) const
+  {
     return columns[column_id].GetType();
   }
 
   // Return appropriate length based on whether column is inlined
-  inline int32_t GetAppropriateLength(const int column_id) const {
+  inline int32_t GetAppropriateLength(const int column_id) const
+  {
     auto is_inlined = columns[column_id].IsInlined();
     int32_t column_length;
 
-    if (is_inlined) {
+    if (is_inlined)
+    {
       column_length = GetLength(column_id);
-    } else {
+    }
+    else
+    {
       column_length = GetVariableLength(column_id);
     }
 
@@ -55,34 +63,42 @@ public:
   }
 
   // Returns fixed length
-  inline int32_t GetLength(const int column_id) const {
+  inline int32_t GetLength(const int column_id) const
+  {
     return columns[column_id].GetFixedLength();
   }
 
-  inline int32_t GetVariableLength(const int column_id) const {
+  inline int32_t GetVariableLength(const int column_id) const
+  {
     return columns[column_id].GetVariableLength();
   }
 
-  inline bool IsInlined(const int column_id) const {
+  inline bool IsInlined(const int column_id) const
+  {
     return columns[column_id].IsInlined();
   }
 
-  inline const Column GetColumn(const int column_id) const {
+  inline const Column GetColumn(const int column_id) const
+  {
     return columns[column_id];
   }
 
   // column id start with 0
-  inline int GetColumnID(std::string col_name) const {
+  inline int GetColumnID(std::string col_name) const
+  {
     int i;
-    for (i = 0; i < GetColumnCount(); ++i) {
-      if (columns[i].GetName() == col_name) {
+    for (i = 0; i < GetColumnCount(); ++i)
+    {
+      if (columns[i].GetName() == col_name)
+      {
         return i;
       }
     }
     return -1;
   }
 
-  inline const std::vector<int> &GetUnlinedColumns() const {
+  inline const std::vector<int> &GetUnlinedColumns() const
+  {
     return uninlined_columns;
   }
 
@@ -91,7 +107,8 @@ public:
   // Return the number of columns in the schema for the tuple.
   inline int GetColumnCount() const { return static_cast<int>(columns.size()); }
 
-  inline int GetUnlinedColumnCount() const {
+  inline int GetUnlinedColumnCount() const
+  {
     return static_cast<int>(uninlined_columns.size());
   }
 

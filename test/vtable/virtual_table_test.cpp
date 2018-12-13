@@ -3,11 +3,13 @@
  */
 #include "vtable/testing_vtable_util.h"
 
-namespace cmudb {
+namespace cmudb
+{
 /** Load the virtual table extension
  *  Ref: https://sqlite.org/c3ref/load_extension.html
  */
-TEST(VtableTest, CreateTest) {
+TEST(VtableTest, CreateTest)
+{
   EXPECT_TRUE(sqlite3_threadsafe());
   std::string db_file = "sqlite.db";
   remove(db_file.c_str());

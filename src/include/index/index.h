@@ -12,7 +12,8 @@
 #include "table/tuple.h"
 #include "type/value.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /**
  * class IndexMetadata - Holds metadata of an index object
@@ -23,13 +24,15 @@ namespace cmudb {
  * mapping relation and does the conversion between tuple key and index key
  */
 class Transaction;
-class IndexMetadata {
+class IndexMetadata
+{
   IndexMetadata() = delete;
 
 public:
   IndexMetadata(std::string index_name, std::string table_name,
                 const Schema *tuple_schema, const std::vector<int> &key_attrs)
-      : name_(index_name), table_name_(table_name), key_attrs_(key_attrs) {
+      : name_(index_name), table_name_(table_name), key_attrs_(key_attrs)
+  {
     key_schema_ = Schema::CopySchema(tuple_schema, key_attrs_);
   }
 
@@ -52,7 +55,8 @@ public:
   inline const std::vector<int> &GetKeyAttrs() const { return key_attrs_; }
 
   // Get a string representation for debugging
-  const std::string ToString() const {
+  const std::string ToString() const
+  {
     std::stringstream os;
 
     os << "IndexMetadata["
@@ -91,7 +95,8 @@ private:
  * only supports conjunction, and may or may not be optimized depending on
  * the type of expressions inside the predicate.
  */
-class Index {
+class Index
+{
 public:
   Index(IndexMetadata *metadata) : metadata_(metadata) {}
 
@@ -106,12 +111,14 @@ public:
 
   Schema *GetKeySchema() const { return metadata_->GetKeySchema(); }
 
-  const std::vector<int> &GetKeyAttrs() const {
+  const std::vector<int> &GetKeyAttrs() const
+  {
     return metadata_->GetKeyAttrs();
   }
 
   // Get a string representation for debugging
-  const std::string ToString() const {
+  const std::string ToString() const
+  {
     std::stringstream os;
 
     os << "INDEX: (" << GetName() << ")";

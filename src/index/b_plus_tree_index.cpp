@@ -4,7 +4,8 @@
 
 #include "index/b_plus_tree_index.h"
 
-namespace cmudb {
+namespace cmudb
+{
 /*
  * Constructor
  */
@@ -18,7 +19,8 @@ BPLUSTREE_INDEX_TYPE::BPlusTreeIndex(IndexMetadata *metadata,
 
 INDEX_TEMPLATE_ARGUMENTS
 void BPLUSTREE_INDEX_TYPE::InsertEntry(const Tuple &key, RID rid,
-                                       Transaction *transaction) {
+                                       Transaction *transaction)
+{
   // construct insert index key
   KeyType index_key;
   index_key.SetFromKey(key);
@@ -28,7 +30,8 @@ void BPLUSTREE_INDEX_TYPE::InsertEntry(const Tuple &key, RID rid,
 
 INDEX_TEMPLATE_ARGUMENTS
 void BPLUSTREE_INDEX_TYPE::DeleteEntry(const Tuple &key,
-                                       Transaction *transaction) {
+                                       Transaction *transaction)
+{
   // construct delete index key
   KeyType index_key;
   index_key.SetFromKey(key);
@@ -38,7 +41,8 @@ void BPLUSTREE_INDEX_TYPE::DeleteEntry(const Tuple &key,
 
 INDEX_TEMPLATE_ARGUMENTS
 void BPLUSTREE_INDEX_TYPE::ScanKey(const Tuple &key, std::vector<RID> &result,
-                                   Transaction *transaction) {
+                                   Transaction *transaction)
+{
   // construct scan index key
   KeyType index_key;
   index_key.SetFromKey(key);

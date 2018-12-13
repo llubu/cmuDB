@@ -13,9 +13,11 @@
 #include "vtable/virtual_table.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-TEST(BPlusTreeTests, InsertTest1) {
+TEST(BPlusTreeTests, InsertTest1)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -34,7 +36,8 @@ TEST(BPlusTreeTests, InsertTest1) {
   (void)header_page;
 
   std::vector<int64_t> keys = {1, 2, 3, 4, 5};
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     int64_t value = key & 0xFFFFFFFF;
     rid.Set((int32_t)(key >> 32), value);
     index_key.SetFromInteger(key);
@@ -42,7 +45,8 @@ TEST(BPlusTreeTests, InsertTest1) {
   }
 
   std::vector<RID> rids;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -56,7 +60,8 @@ TEST(BPlusTreeTests, InsertTest1) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -71,7 +76,8 @@ TEST(BPlusTreeTests, InsertTest1) {
   remove("test.db");
 }
 
-TEST(BPlusTreeTests, InsertTest2) {
+TEST(BPlusTreeTests, InsertTest2)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -90,7 +96,8 @@ TEST(BPlusTreeTests, InsertTest2) {
   (void)header_page;
 
   std::vector<int64_t> keys = {5, 4, 3, 2, 1};
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     int64_t value = key & 0xFFFFFFFF;
     rid.Set((int32_t)(key >> 32), value);
     index_key.SetFromInteger(key);
@@ -98,7 +105,8 @@ TEST(BPlusTreeTests, InsertTest2) {
   }
 
   std::vector<RID> rids;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -112,7 +120,8 @@ TEST(BPlusTreeTests, InsertTest2) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -125,7 +134,8 @@ TEST(BPlusTreeTests, InsertTest2) {
   current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -138,7 +148,8 @@ TEST(BPlusTreeTests, InsertTest2) {
   remove("test.db");
 }
 
-TEST(BPlusTreeTests, DeleteTest1) {
+TEST(BPlusTreeTests, DeleteTest1)
+{
   // create KeyComparator and index schema
   std::string createStmt = "a bigint";
   Schema *key_schema = ParseCreateStatement(createStmt);
@@ -158,7 +169,8 @@ TEST(BPlusTreeTests, DeleteTest1) {
   (void)header_page;
 
   std::vector<int64_t> keys = {1, 2, 3, 4, 5};
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     int64_t value = key & 0xFFFFFFFF;
     rid.Set((int32_t)(key >> 32), value);
     index_key.SetFromInteger(key);
@@ -166,7 +178,8 @@ TEST(BPlusTreeTests, DeleteTest1) {
   }
 
   std::vector<RID> rids;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -180,7 +193,8 @@ TEST(BPlusTreeTests, DeleteTest1) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -190,7 +204,8 @@ TEST(BPlusTreeTests, DeleteTest1) {
   EXPECT_EQ(current_key, keys.size() + 1);
 
   std::vector<int64_t> remove_keys = {1, 5};
-  for (auto key : remove_keys) {
+  for (auto key : remove_keys)
+  {
     index_key.SetFromInteger(key);
     tree.Remove(index_key, transaction);
   }
@@ -200,7 +215,8 @@ TEST(BPlusTreeTests, DeleteTest1) {
   int64_t size = 0;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -216,7 +232,8 @@ TEST(BPlusTreeTests, DeleteTest1) {
   remove("test.db");
 }
 
-TEST(BPlusTreeTests, DeleteTest2) {
+TEST(BPlusTreeTests, DeleteTest2)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -235,7 +252,8 @@ TEST(BPlusTreeTests, DeleteTest2) {
   (void)header_page;
 
   std::vector<int64_t> keys = {1, 2, 3, 4, 5};
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     int64_t value = key & 0xFFFFFFFF;
     rid.Set((int32_t)(key >> 32), value);
     index_key.SetFromInteger(key);
@@ -243,7 +261,8 @@ TEST(BPlusTreeTests, DeleteTest2) {
   }
 
   std::vector<RID> rids;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -257,7 +276,8 @@ TEST(BPlusTreeTests, DeleteTest2) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -267,7 +287,8 @@ TEST(BPlusTreeTests, DeleteTest2) {
   EXPECT_EQ(current_key, keys.size() + 1);
 
   std::vector<int64_t> remove_keys = {1, 5, 3, 4};
-  for (auto key : remove_keys) {
+  for (auto key : remove_keys)
+  {
     index_key.SetFromInteger(key);
     tree.Remove(index_key, transaction);
   }
@@ -277,7 +298,8 @@ TEST(BPlusTreeTests, DeleteTest2) {
   int64_t size = 0;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -293,7 +315,8 @@ TEST(BPlusTreeTests, DeleteTest2) {
   remove("test.db");
 }
 
-TEST(BPlusTreeTests, ScaleTest) {
+TEST(BPlusTreeTests, ScaleTest)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -312,18 +335,21 @@ TEST(BPlusTreeTests, ScaleTest) {
 
   int64_t scale = 10000;
   std::vector<int64_t> keys;
-  for (int64_t key = 1; key < scale; key++) {
+  for (int64_t key = 1; key < scale; key++)
+  {
     keys.push_back(key);
   }
 
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     int64_t value = key & 0xFFFFFFFF;
     rid.Set((int32_t)(key >> 32), value);
     index_key.SetFromInteger(key);
     tree.Insert(index_key, rid, transaction);
   }
   std::vector<RID> rids;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -337,18 +363,21 @@ TEST(BPlusTreeTests, ScaleTest) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     current_key = current_key + 1;
   }
   EXPECT_EQ(current_key, keys.size() + 1);
 
   int64_t remove_scale = 9900;
   std::vector<int64_t> remove_keys;
-  for (int64_t key = 1; key < remove_scale; key++) {
+  for (int64_t key = 1; key < remove_scale; key++)
+  {
     remove_keys.push_back(key);
   }
   // std::random_shuffle(remove_keys.begin(), remove_keys.end());
-  for (auto key : remove_keys) {
+  for (auto key : remove_keys)
+  {
     index_key.SetFromInteger(key);
     tree.Remove(index_key, transaction);
   }
@@ -358,7 +387,8 @@ TEST(BPlusTreeTests, ScaleTest) {
   int64_t size = 0;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     current_key = current_key + 1;
     size = size + 1;
   }

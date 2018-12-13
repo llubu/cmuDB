@@ -12,9 +12,12 @@
 #include "buffer/replacer.h"
 #include "hash/extendible_hash.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-template <typename T> class LRUReplacer : public Replacer<T> {
+template <typename T>
+class LRUReplacer : public Replacer<T>
+{
 public:
   // do not change public interface
   LRUReplacer();

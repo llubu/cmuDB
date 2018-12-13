@@ -8,15 +8,19 @@
 
 #include "catalog/schema.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 // Construct schema from vector of Column
-Schema::Schema(const std::vector<Column> &columns) : tuple_is_inlined(true) {
+Schema::Schema(const std::vector<Column> &columns) : tuple_is_inlined(true)
+{
   int32_t column_offset = 0;
-  for (size_t index = 0; index < columns.size(); index++) {
+  for (size_t index = 0; index < columns.size(); index++)
+  {
     Column column = columns[index];
     // handle uninlined column
-    if (column.IsInlined() == false) {
+    if (column.IsInlined() == false)
+    {
       tuple_is_inlined = false;
       uninlined_columns.push_back(index);
     }
@@ -37,12 +41,14 @@ Schema::Schema(const std::vector<Column> &columns) : tuple_is_inlined(true) {
  * The returned schema is created by new operator, and the caller is responsible
  * for destroying it.
  */
-Schema *Schema::CopySchema(const Schema *schema, const std::vector<int> &ids) {
+Schema *Schema::CopySchema(const Schema *schema, const std::vector<int> &ids)
+{
   std::vector<Column> column_list;
   // Reserve some space to avoid multiple malloc() calls
   column_list.reserve(ids.size());
   // For each column index, push the column
-  for (int id : ids) {
+  for (int id : ids)
+  {
     // Make sure the index does not refer to invalid element
     assert(id < schema->GetColumnCount());
     column_list.push_back(schema->columns[id]);
@@ -52,7 +58,8 @@ Schema *Schema::CopySchema(const Schema *schema, const std::vector<int> &ids) {
   return ret_schema;
 }
 
-std::string Schema::ToString() const {
+std::string Schema::ToString() const
+{
   std::ostringstream os;
 
   os << "Schema["
@@ -62,10 +69,14 @@ std::string Schema::ToString() const {
 
   bool first = true;
   os << " :: (";
-  for (int i = 0; i < GetColumnCount(); i++) {
-    if (first) {
+  for (int i = 0; i < GetColumnCount(); i++)
+  {
+    if (first)
+    {
       first = false;
-    } else {
+    }
+    else
+    {
       os << ", ";
     }
     os << columns[i].ToString();
@@ -76,13 +87,16 @@ std::string Schema::ToString() const {
 }
 
 // Compare two schemas
-bool Schema::operator==(const Schema &other) const {
+bool Schema::operator==(const Schema &other) const
+{
   if (other.GetColumnCount() != GetColumnCount() ||
-      other.IsInlined() != IsInlined()) {
+      other.IsInlined() != IsInlined())
+  {
     return false;
   }
 
-  for (int column_itr = 0; column_itr < other.GetColumnCount(); column_itr++) {
+  for (int column_itr = 0; column_itr < other.GetColumnCount(); column_itr++)
+  {
     const Column &column_info = other.GetColumn(column_itr);
     const Column &other_column_info = GetColumn(column_itr);
 

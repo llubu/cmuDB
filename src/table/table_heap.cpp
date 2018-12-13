@@ -7,13 +7,16 @@
 #include "common/logger.h"
 #include "table/table_heap.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 TableHeap::TableHeap(BufferPoolManager *buffer_pool_manager,
                      LockManager *lock_manager, page_id_t first_page_id)
     : buffer_pool_manager_(buffer_pool_manager), lock_manager_(lock_manager),
-      first_page_id_(first_page_id) {
-  if (first_page_id_ == INVALID_PAGE_ID) {
+      first_page_id_(first_page_id)
+{
+  if (first_page_id_ == INVALID_PAGE_ID)
+  {
     auto first_page =
         static_cast<TablePage *>(buffer_pool_manager_->NewPage(first_page_id_));
     assert(first_page != nullptr); // todo: abort table creation?
@@ -26,15 +29,18 @@ TableHeap::TableHeap(BufferPoolManager *buffer_pool_manager,
   }
 }
 
-bool TableHeap::InsertTuple(const Tuple &tuple, RID &rid, Transaction *txn) {
-  if (tuple.size_ + 28 > PAGE_SIZE) { // larger than one page size
+bool TableHeap::InsertTuple(const Tuple &tuple, RID &rid, Transaction *txn)
+{
+  if (tuple.size_ + 28 > PAGE_SIZE)
+  { // larger than one page size
     txn->SetState(TransactionState::ABORTED);
     return false;
   }
 
   auto cur_page =
       static_cast<TablePage *>(buffer_pool_manager_->FetchPage(first_page_id_));
-  if (cur_page == nullptr) {
+  if (cur_page == nullptr)
+  {
     txn->SetState(TransactionState::ABORTED);
     return false;
   }
@@ -42,18 +48,23 @@ bool TableHeap::InsertTuple(const Tuple &tuple, RID &rid, Transaction *txn) {
   cur_page->WLatch();
   while (!cur_page->InsertTuple(
       tuple, rid, txn,
-      lock_manager_)) { // fail to insert due to not enough space
+      lock_manager_))
+  { // fail to insert due to not enough space
     auto next_page_id = cur_page->GetNextPageId();
-    if (next_page_id != INVALID_PAGE_ID) { // valid next page
+    if (next_page_id != INVALID_PAGE_ID)
+    { // valid next page
       cur_page->WUnlatch();
       buffer_pool_manager_->UnpinPage(cur_page->GetPageId(), false);
       cur_page = static_cast<TablePage *>(
           buffer_pool_manager_->FetchPage(next_page_id));
       cur_page->WLatch();
-    } else { // create new page
+    }
+    else
+    { // create new page
       auto new_page =
           static_cast<TablePage *>(buffer_pool_manager_->NewPage(next_page_id));
-      if (new_page == nullptr) {
+      if (new_page == nullptr)
+      {
         cur_page->WUnlatch();
         buffer_pool_manager_->UnpinPage(cur_page->GetPageId(), false);
         txn->SetState(TransactionState::ABORTED);
@@ -76,11 +87,13 @@ bool TableHeap::InsertTuple(const Tuple &tuple, RID &rid, Transaction *txn) {
   return true;
 }
 
-bool TableHeap::MarkDelete(const RID &rid, Transaction *txn) {
+bool TableHeap::MarkDelete(const RID &rid, Transaction *txn)
+{
   // todo: remove empty page
   auto page = reinterpret_cast<TablePage *>(
       buffer_pool_manager_->FetchPage(rid.GetPageId()));
-  if (page == nullptr) {
+  if (page == nullptr)
+  {
     txn->SetState(TransactionState::ABORTED);
     return false;
   }
@@ -93,10 +106,12 @@ bool TableHeap::MarkDelete(const RID &rid, Transaction *txn) {
 }
 
 bool TableHeap::UpdateTuple(const Tuple &tuple, const RID &rid,
-                            Transaction *txn) {
+                            Transaction *txn)
+{
   auto page = reinterpret_cast<TablePage *>(
       buffer_pool_manager_->FetchPage(rid.GetPageId()));
-  if (page == nullptr) {
+  if (page == nullptr)
+  {
     txn->SetState(TransactionState::ABORTED);
     return false;
   }
@@ -111,7 +126,8 @@ bool TableHeap::UpdateTuple(const Tuple &tuple, const RID &rid,
   return is_updated;
 }
 
-void TableHeap::ApplyDelete(const RID &rid, Transaction *txn) {
+void TableHeap::ApplyDelete(const RID &rid, Transaction *txn)
+{
   auto page = reinterpret_cast<TablePage *>(
       buffer_pool_manager_->FetchPage(rid.GetPageId()));
   assert(page != nullptr);
@@ -122,7 +138,8 @@ void TableHeap::ApplyDelete(const RID &rid, Transaction *txn) {
   buffer_pool_manager_->UnpinPage(page->GetPageId(), true);
 }
 
-void TableHeap::RollbackDelete(const RID &rid, Transaction *txn) {
+void TableHeap::RollbackDelete(const RID &rid, Transaction *txn)
+{
   auto page = reinterpret_cast<TablePage *>(
       buffer_pool_manager_->FetchPage(rid.GetPageId()));
   assert(page != nullptr);
@@ -133,10 +150,12 @@ void TableHeap::RollbackDelete(const RID &rid, Transaction *txn) {
 }
 
 // called by tuple iterator
-bool TableHeap::GetTuple(const RID &rid, Tuple &tuple, Transaction *txn) {
+bool TableHeap::GetTuple(const RID &rid, Tuple &tuple, Transaction *txn)
+{
   auto page = static_cast<TablePage *>(
       buffer_pool_manager_->FetchPage(rid.GetPageId()));
-  if (page == nullptr) {
+  if (page == nullptr)
+  {
     txn->SetState(TransactionState::ABORTED);
     return false;
   }
@@ -147,12 +166,14 @@ bool TableHeap::GetTuple(const RID &rid, Tuple &tuple, Transaction *txn) {
   return res;
 }
 
-bool TableHeap::DeleteTableHeap() {
+bool TableHeap::DeleteTableHeap()
+{
   // todo: real delete
   return true;
 }
 
-TableIterator TableHeap::begin(Transaction *txn) {
+TableIterator TableHeap::begin(Transaction *txn)
+{
   auto page =
       static_cast<TablePage *>(buffer_pool_manager_->FetchPage(first_page_id_));
   page->RLatch();
@@ -165,7 +186,8 @@ TableIterator TableHeap::begin(Transaction *txn) {
   return TableIterator(this, rid, txn);
 }
 
-TableIterator TableHeap::end() {
+TableIterator TableHeap::end()
+{
   return TableIterator(this, RID(INVALID_PAGE_ID, -1), nullptr);
 }
 

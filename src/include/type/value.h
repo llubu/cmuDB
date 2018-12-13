@@ -9,18 +9,21 @@
 #include "type/type.h"
 #include <cstring>
 
-namespace cmudb {
+namespace cmudb
+{
 
 class type;
 
-inline CmpBool GetCmpBool(bool boolean) {
+inline CmpBool GetCmpBool(bool boolean)
+{
   return boolean ? CMP_TRUE : CMP_FALSE;
 }
 
 // A value is an abstract class that represents a view over SQL data stored in
 // some materialized state. All values have a type and comparison functions, but
 // subclasses implement other type-specific functionality.
-class Value {
+class Value
+{
   // Friend Type classes
   friend class Type;
   friend class NumericType;
@@ -35,7 +38,8 @@ class Value {
   friend class VarlenType;
 
 public:
-  Value(const TypeId type) : manage_data_(false), type_id_(type) {
+  Value(const TypeId type) : manage_data_(false), type_id_(type)
+  {
     size_.len = PELOTON_VALUE_NULL;
   }
   // BOOLEAN and TINYINT
@@ -60,7 +64,8 @@ public:
   Value &operator=(Value other);
   ~Value();
   // nothrow
-  friend void swap(Value &first, Value &second) {
+  friend void swap(Value &first, Value &second)
+  {
     std::swap(first.value_, second.value_);
     std::swap(first.size_, second.size_);
     std::swap(first.manage_data_, second.manage_data_);
@@ -74,69 +79,89 @@ public:
   inline TypeId GetTypeId() const { return type_id_; }
 
   // Get the length of the variable length data
-  inline uint32_t GetLength() const {
+  inline uint32_t GetLength() const
+  {
     return Type::GetInstance(type_id_)->GetLength(*this);
   }
   // Access the raw variable length data
-  inline const char *GetData() const {
+  inline const char *GetData() const
+  {
     return Type::GetInstance(type_id_)->GetData(*this);
   }
 
-  template <class T> inline T GetAs() const {
+  template <class T>
+  inline T GetAs() const
+  {
     return *reinterpret_cast<const T *>(&value_);
   }
 
-  inline Value CastAs(const TypeId type_id) const {
+  inline Value CastAs(const TypeId type_id) const
+  {
     return Type::GetInstance(type_id_)->CastAs(*this, type_id);
   }
   // Comparison Methods
-  inline CmpBool CompareEquals(const Value &o) const {
+  inline CmpBool CompareEquals(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->CompareEquals(*this, o);
   }
-  inline CmpBool CompareNotEquals(const Value &o) const {
+  inline CmpBool CompareNotEquals(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->CompareNotEquals(*this, o);
   }
-  inline CmpBool CompareLessThan(const Value &o) const {
+  inline CmpBool CompareLessThan(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->CompareLessThan(*this, o);
   }
-  inline CmpBool CompareLessThanEquals(const Value &o) const {
+  inline CmpBool CompareLessThanEquals(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->CompareLessThanEquals(*this, o);
   }
-  inline CmpBool CompareGreaterThan(const Value &o) const {
+  inline CmpBool CompareGreaterThan(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->CompareGreaterThan(*this, o);
   }
-  inline CmpBool CompareGreaterThanEquals(const Value &o) const {
+  inline CmpBool CompareGreaterThanEquals(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->CompareGreaterThanEquals(*this, o);
   }
 
   // Other mathematical functions
-  inline Value Add(const Value &o) const {
+  inline Value Add(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Add(*this, o);
   }
-  inline Value Subtract(const Value &o) const {
+  inline Value Subtract(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Subtract(*this, o);
   }
-  inline Value Multiply(const Value &o) const {
+  inline Value Multiply(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Multiply(*this, o);
   }
-  inline Value Divide(const Value &o) const {
+  inline Value Divide(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Divide(*this, o);
   }
-  inline Value Modulo(const Value &o) const {
+  inline Value Modulo(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Modulo(*this, o);
   }
-  inline Value Min(const Value &o) const {
+  inline Value Min(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Min(*this, o);
   }
-  inline Value Max(const Value &o) const {
+  inline Value Max(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->Max(*this, o);
   }
   inline Value Sqrt() const { return Type::GetInstance(type_id_)->Sqrt(*this); }
 
-  inline Value OperateNull(const Value &o) const {
+  inline Value OperateNull(const Value &o) const
+  {
     return Type::GetInstance(type_id_)->OperateNull(*this, o);
   }
-  inline bool IsZero() const {
+  inline bool IsZero() const
+  {
     return Type::GetInstance(type_id_)->IsZero(*this);
   }
   inline bool IsNull() const { return size_.len == PELOTON_VALUE_NULL; }
@@ -146,18 +171,21 @@ public:
   // space, or whether we must store only a reference to this value. If inlined
   // is false, we may use the provided data pool to allocate space for this
   // value, storing a reference into the allocated pool space in the storage.
-  inline void SerializeTo(char *storage) const {
+  inline void SerializeTo(char *storage) const
+  {
     Type::GetInstance(type_id_)->SerializeTo(*this, storage);
   }
 
   // Deserialize a value of the given type from the given storage space.
   inline static Value DeserializeFrom(const char *storage,
-                                      const TypeId type_id) {
+                                      const TypeId type_id)
+  {
     return Type::GetInstance(type_id)->DeserializeFrom(storage);
   }
 
   // Return a string version of this value
-  inline std::string ToString() const {
+  inline std::string ToString() const
+  {
     return Type::GetInstance(type_id_)->ToString(*this);
   }
   // Create a copy of this value

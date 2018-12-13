@@ -10,13 +10,14 @@
 #include "index/b_plus_tree.h"
 #include "page/header_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 INDEX_TEMPLATE_ARGUMENTS
 BPLUSTREE_TYPE::BPlusTree(const std::string &name,
-                                BufferPoolManager *buffer_pool_manager,
-                                const KeyComparator &comparator,
-                                page_id_t root_page_id)
+                          BufferPoolManager *buffer_pool_manager,
+                          const KeyComparator &comparator,
+                          page_id_t root_page_id)
     : index_name_(name), root_page_id_(root_page_id),
       buffer_pool_manager_(buffer_pool_manager), comparator_(comparator) {}
 
@@ -36,7 +37,8 @@ bool BPLUSTREE_TYPE::IsEmpty() const { return true; }
 INDEX_TEMPLATE_ARGUMENTS
 bool BPLUSTREE_TYPE::GetValue(const KeyType &key,
                               std::vector<ValueType> &result,
-                              Transaction *transaction) {
+                              Transaction *transaction)
+{
   return false;
 }
 
@@ -52,7 +54,8 @@ bool BPLUSTREE_TYPE::GetValue(const KeyType &key,
  */
 INDEX_TEMPLATE_ARGUMENTS
 bool BPLUSTREE_TYPE::Insert(const KeyType &key, const ValueType &value,
-                            Transaction *transaction) {
+                            Transaction *transaction)
+{
   return false;
 }
 /*
@@ -74,7 +77,8 @@ void BPLUSTREE_TYPE::StartNewTree(const KeyType &key, const ValueType &value) {}
  */
 INDEX_TEMPLATE_ARGUMENTS
 bool BPLUSTREE_TYPE::InsertIntoLeaf(const KeyType &key, const ValueType &value,
-                                    Transaction *transaction) {
+                                    Transaction *transaction)
+{
   return false;
 }
 
@@ -86,7 +90,8 @@ bool BPLUSTREE_TYPE::InsertIntoLeaf(const KeyType &key, const ValueType &value,
  * of key & value pairs from input page to newly created page
  */
 INDEX_TEMPLATE_ARGUMENTS
-template <typename N> N *BPLUSTREE_TYPE::Split(N *node) { return nullptr; }
+template <typename N>
+N *BPLUSTREE_TYPE::Split(N *node) { return nullptr; }
 
 /*
  * Insert key & value pair into internal page after split
@@ -125,7 +130,8 @@ void BPLUSTREE_TYPE::Remove(const KeyType &key, Transaction *transaction) {}
  */
 INDEX_TEMPLATE_ARGUMENTS
 template <typename N>
-bool BPLUSTREE_TYPE::CoalesceOrRedistribute(N *node, Transaction *transaction) {
+bool BPLUSTREE_TYPE::CoalesceOrRedistribute(N *node, Transaction *transaction)
+{
   return false;
 }
 
@@ -146,7 +152,8 @@ template <typename N>
 bool BPLUSTREE_TYPE::Coalesce(
     N *&neighbor_node, N *&node,
     BPlusTreeInternalPage<KeyType, page_id_t, KeyComparator> *&parent,
-    int index, Transaction *transaction) {
+    int index, Transaction *transaction)
+{
   return false;
 }
 
@@ -173,7 +180,8 @@ void BPLUSTREE_TYPE::Redistribute(N *neighbor_node, N *node, int index) {}
  * happend
  */
 INDEX_TEMPLATE_ARGUMENTS
-bool BPLUSTREE_TYPE::AdjustRoot(BPlusTreePage *old_root_node) {
+bool BPLUSTREE_TYPE::AdjustRoot(BPlusTreePage *old_root_node)
+{
   return false;
 }
 
@@ -194,7 +202,8 @@ INDEXITERATOR_TYPE BPLUSTREE_TYPE::Begin() { return INDEXITERATOR_TYPE(); }
  * @return : index iterator
  */
 INDEX_TEMPLATE_ARGUMENTS
-INDEXITERATOR_TYPE BPLUSTREE_TYPE::Begin(const KeyType &key) {
+INDEXITERATOR_TYPE BPLUSTREE_TYPE::Begin(const KeyType &key)
+{
   return INDEXITERATOR_TYPE();
 }
 
@@ -207,7 +216,8 @@ INDEXITERATOR_TYPE BPLUSTREE_TYPE::Begin(const KeyType &key) {
  */
 INDEX_TEMPLATE_ARGUMENTS
 B_PLUS_TREE_LEAF_PAGE_TYPE *BPLUSTREE_TYPE::FindLeafPage(const KeyType &key,
-                                                         bool leftMost) {
+                                                         bool leftMost)
+{
   return nullptr;
 }
 
@@ -220,7 +230,8 @@ B_PLUS_TREE_LEAF_PAGE_TYPE *BPLUSTREE_TYPE::FindLeafPage(const KeyType &key,
  * updating it.
  */
 INDEX_TEMPLATE_ARGUMENTS
-void BPLUSTREE_TYPE::UpdateRootPageId(int insert_record) {
+void BPLUSTREE_TYPE::UpdateRootPageId(int insert_record)
+{
   HeaderPage *header_page = static_cast<HeaderPage *>(
       buffer_pool_manager_->FetchPage(HEADER_PAGE_ID));
   if (insert_record)
@@ -245,10 +256,12 @@ std::string BPLUSTREE_TYPE::ToString(bool verbose) { return "Empty tree"; }
  */
 INDEX_TEMPLATE_ARGUMENTS
 void BPLUSTREE_TYPE::InsertFromFile(const std::string &file_name,
-                                    Transaction *transaction) {
+                                    Transaction *transaction)
+{
   int64_t key;
   std::ifstream input(file_name);
-  while (input) {
+  while (input)
+  {
     input >> key;
 
     KeyType index_key;
@@ -263,10 +276,12 @@ void BPLUSTREE_TYPE::InsertFromFile(const std::string &file_name,
  */
 INDEX_TEMPLATE_ARGUMENTS
 void BPLUSTREE_TYPE::RemoveFromFile(const std::string &file_name,
-                                    Transaction *transaction) {
+                                    Transaction *transaction)
+{
   int64_t key;
   std::ifstream input(file_name);
-  while (input) {
+  while (input)
+  {
     input >> key;
     KeyType index_key;
     index_key.SetFromInteger(key);

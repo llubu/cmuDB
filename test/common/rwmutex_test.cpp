@@ -7,47 +7,58 @@
 #include "common/rwmutex.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class Counter {
+class Counter
+{
 public:
   Counter() : count_(0), mutex{} {}
-  void Add(int num) {
+  void Add(int num)
+  {
     mutex.WLock();
     count_ += num;
     mutex.WUnlock();
   }
-  int Read() {
+  int Read()
+  {
     int res;
     mutex.RLock();
     res = count_;
     mutex.RUnlock();
     return res;
   }
+
 private:
   int count_;
   RWMutex mutex;
 };
 
-TEST(RWMutexTest, BasicTest) {
+TEST(RWMutexTest, BasicTest)
+{
   int num_threads = 100;
   Counter counter{};
   counter.Add(5);
   std::vector<std::thread> threads;
-  for (int tid = 0; tid < num_threads; tid++) {
-    if (tid % 2 == 0) {
+  for (int tid = 0; tid < num_threads; tid++)
+  {
+    if (tid % 2 == 0)
+    {
       threads.push_back(std::thread([tid, &counter]() {
         counter.Read();
       }));
-    } else {
+    }
+    else
+    {
       threads.push_back(std::thread([tid, &counter]() {
         counter.Add(1);
       }));
     }
   }
-  for (int i = 0; i < num_threads; i++) {
+  for (int i = 0; i < num_threads; i++)
+  {
     threads[i].join();
   }
   EXPECT_EQ(counter.Read(), 55);
 }
-}
+} // namespace cmudb

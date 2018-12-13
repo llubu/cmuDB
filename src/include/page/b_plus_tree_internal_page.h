@@ -20,13 +20,15 @@
 
 #include "page/b_plus_tree_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-#define B_PLUS_TREE_INTERNAL_PAGE_TYPE                                         \
+#define B_PLUS_TREE_INTERNAL_PAGE_TYPE \
   BPlusTreeInternalPage<KeyType, ValueType, KeyComparator>
 
 INDEX_TEMPLATE_ARGUMENTS
-class BPlusTreeInternalPage : public BPlusTreePage {
+class BPlusTreeInternalPage : public BPlusTreePage
+{
 public:
   // must call initialize method after "create" a new node
   void Init(page_id_t page_id, page_id_t parent_id = INVALID_PAGE_ID);

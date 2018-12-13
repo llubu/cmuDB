@@ -1,14 +1,16 @@
 #include "buffer/buffer_pool_manager.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /*
  * BufferPoolManager Constructor
  * WARNING: Do Not Edit This Function
  */
 BufferPoolManager::BufferPoolManager(size_t pool_size,
-                                                 const std::string &db_file)
-    : pool_size_(pool_size), disk_manager_{db_file} {
+                                     const std::string &db_file)
+    : pool_size_(pool_size), disk_manager_{db_file}
+{
   // a consecutive memory space for buffer pool
   pages_ = new Page[pool_size_];
   page_table_ = new ExtendibleHash<page_id_t, Page *>(100);
@@ -16,7 +18,8 @@ BufferPoolManager::BufferPoolManager(size_t pool_size,
   free_list_ = new std::list<Page *>;
 
   // put all the pages into free list
-  for (size_t i = 0; i < pool_size_; ++i) {
+  for (size_t i = 0; i < pool_size_; ++i)
+  {
     free_list_->push_back(&pages_[i]);
   }
 }
@@ -25,7 +28,8 @@ BufferPoolManager::BufferPoolManager(size_t pool_size,
  * BufferPoolManager Deconstructor
  * WARNING: Do Not Edit This Function
  */
-BufferPoolManager::~BufferPoolManager() {
+BufferPoolManager::~BufferPoolManager()
+{
   FlushAllPages();
   delete[] pages_;
   delete page_table_;
@@ -52,7 +56,8 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id) { return nullptr; }
  * if pin_count<=0 before this call, return false.
  * is_dirty: set the dirty flag of this page
  */
-bool BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty) {
+bool BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty)
+{
   return false;
 }
 

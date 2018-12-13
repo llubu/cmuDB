@@ -4,13 +4,15 @@
 #pragma once
 #include "type/value.h"
 
-namespace cmudb {
+namespace cmudb
+{
 /* A varlen value is an abstract class representing all objects that have
  * variable length.
  * For simplicity, for valen_type we always set flag "inline" as true, which
  * means we store actual data along with its size rather than a pointer
  */
-class VarlenType : public Type {
+class VarlenType : public Type
+{
 public:
   VarlenType(TypeId type);
   ~VarlenType();

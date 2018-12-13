@@ -5,7 +5,8 @@
 
 #include "index/index_iterator.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /*
  * NOTE: you can change the destructor/constructor method here

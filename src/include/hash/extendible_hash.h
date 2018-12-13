@@ -10,15 +10,17 @@
 #pragma once
 
 #include <cstdlib>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "hash/hash_table.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 template <typename K, typename V>
-class ExtendibleHash : public HashTable<K, V> {
+class ExtendibleHash : public HashTable<K, V>
+{
 public:
   // constructor
   ExtendibleHash(size_t size);

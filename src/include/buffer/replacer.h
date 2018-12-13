@@ -7,9 +7,12 @@
 
 #include <cstdlib>
 
-namespace cmudb {
+namespace cmudb
+{
 
-template <typename T> class Replacer {
+template <typename T>
+class Replacer
+{
 public:
   Replacer() {}
   virtual ~Replacer() {}

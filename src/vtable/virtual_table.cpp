@@ -13,13 +13,15 @@
 #include "page/header_page.h"
 #include "vtable/virtual_table.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 SQLITE_EXTENSION_INIT1
 
 /* API implementation */
 int VtabCreate(sqlite3 *db, void *pAux, int argc, const char *const *argv,
-               sqlite3_vtab **ppVtab, char **pzErr) {
+               sqlite3_vtab **ppVtab, char **pzErr)
+{
   BufferPoolManager *buffer_pool_manager =
       global_parameters->buffer_pool_manager_;
   LockManager *lock_manager = global_parameters->lock_manager_;
@@ -36,7 +38,8 @@ int VtabCreate(sqlite3 *db, void *pAux, int argc, const char *const *argv,
 
   // parse arg[4](string that defines table index)
   Index *index = nullptr;
-  if (argc > 4) {
+  if (argc > 4)
+  {
     std::string index_string(argv[4]);
     index_string = index_string.substr(1, (index_string.size() - 2));
     // create index object, allocate memory space
@@ -61,7 +64,8 @@ int VtabCreate(sqlite3 *db, void *pAux, int argc, const char *const *argv,
 }
 
 int VtabConnect(sqlite3 *db, void *pAux, int argc, const char *const *argv,
-                sqlite3_vtab **ppVtab, char **pzErr) {
+                sqlite3_vtab **ppVtab, char **pzErr)
+{
   assert(argc >= 4);
   std::string schema_string(argv[3]);
   // remove the very first and last character
@@ -80,7 +84,8 @@ int VtabConnect(sqlite3 *db, void *pAux, int argc, const char *const *argv,
   header_page->GetRootId(std::string(argv[2]), table_root_id);
   // parse arg[4](string that defines table index)
   Index *index = nullptr;
-  if (argc > 4) {
+  if (argc > 4)
+  {
     std::string index_string(argv[4]);
     index_string = index_string.substr(1, (index_string.size() - 2));
     // create index object, allocate memory space
@@ -108,7 +113,8 @@ int VtabConnect(sqlite3 *db, void *pAux, int argc, const char *const *argv,
  * (1) equlity check. e.g select * from foo where a = 1
  * (2) indexed column == predicated column
  */
-int VtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo) {
+int VtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo)
+{
   // LOG_DEBUG("VtabBestIndex");
   VirtualTable *table = reinterpret_cast<VirtualTable *>(tab);
   if (table->GetIndex() == nullptr)
@@ -121,15 +127,18 @@ int VtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo) {
 
   int counter = 0;
   bool is_index_scan = true;
-  for (int i = 0; i < pIdxInfo->nConstraint; i++) {
+  for (int i = 0; i < pIdxInfo->nConstraint; i++)
+  {
     if (pIdxInfo->aConstraint[i].usable == 0)
       continue;
     int item = pIdxInfo->aConstraint[i].iColumn;
     // if predicate column is part of indexed column
     if (std::find(key_attrs.begin(), key_attrs.end(), item) !=
-        key_attrs.end()) {
+        key_attrs.end())
+    {
       // equlity check
-      if (pIdxInfo->aConstraint[i].op != SQLITE_INDEX_CONSTRAINT_EQ) {
+      if (pIdxInfo->aConstraint[i].op != SQLITE_INDEX_CONSTRAINT_EQ)
+      {
         is_index_scan = false;
         break;
       }
@@ -138,22 +147,26 @@ int VtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo) {
     }
   }
 
-  if (counter == (int)key_attrs.size() && is_index_scan) {
+  if (counter == (int)key_attrs.size() && is_index_scan)
+  {
     pIdxInfo->idxNum = 1;
   }
   return SQLITE_OK;
 }
 
-int VtabDisconnect(sqlite3_vtab *pVtab) {
+int VtabDisconnect(sqlite3_vtab *pVtab)
+{
   VirtualTable *virtual_table = reinterpret_cast<VirtualTable *>(pVtab);
   delete virtual_table;
   return SQLITE_OK;
 }
 
-int VtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor) {
+int VtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor)
+{
   // LOG_DEBUG("VtabOpen");
   // if read operation, begin transaction here
-  if (global_parameters->transaction_ == nullptr) {
+  if (global_parameters->transaction_ == nullptr)
+  {
     VtabBegin(pVtab);
   }
   VirtualTable *virtual_table = reinterpret_cast<VirtualTable *>(pVtab);
@@ -163,7 +176,8 @@ int VtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor) {
   return SQLITE_OK;
 }
 
-int VtabClose(sqlite3_vtab_cursor *cur) {
+int VtabClose(sqlite3_vtab_cursor *cur)
+{
   // LOG_DEBUG("VtabClose");
   Cursor *cursor = reinterpret_cast<Cursor *>(cur);
   // if read operation, commit transaction here
@@ -179,12 +193,14 @@ int VtabClose(sqlite3_vtab_cursor *cur) {
 ** VtabEof().
 */
 int VtabFilter(sqlite3_vtab_cursor *pVtabCursor, int idxNum, const char *idxStr,
-               int argc, sqlite3_value **argv) {
+               int argc, sqlite3_value **argv)
+{
   // LOG_DEBUG("VtabFilter");
   Cursor *cursor = reinterpret_cast<Cursor *>(pVtabCursor);
   Schema *key_schema;
   // if indexed scan
-  if (idxNum == 1) {
+  if (idxNum == 1)
+  {
     cursor->SetScanFlag(true);
     // Construct the tuple for point query
     key_schema = cursor->GetKeySchema();
@@ -194,27 +210,31 @@ int VtabFilter(sqlite3_vtab_cursor *pVtabCursor, int idxNum, const char *idxStr,
   return SQLITE_OK;
 }
 
-int VtabNext(sqlite3_vtab_cursor *cur) {
+int VtabNext(sqlite3_vtab_cursor *cur)
+{
   // LOG_DEBUG("VtabNext");
   Cursor *cursor = reinterpret_cast<Cursor *>(cur);
   ++(*cursor);
   return SQLITE_OK;
 }
 
-int VtabEof(sqlite3_vtab_cursor *cur) {
+int VtabEof(sqlite3_vtab_cursor *cur)
+{
   // LOG_DEBUG("VtabEof");
   Cursor *cursor = reinterpret_cast<Cursor *>(cur);
   return cursor->isEof();
 }
 
-int VtabColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i) {
+int VtabColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i)
+{
   Cursor *cursor = reinterpret_cast<Cursor *>(cur);
   Schema *schema = cursor->GetVirtualTable()->GetSchema();
   // get column type and value
   TypeId type = schema->GetType(i);
   Value v = cursor->GetCurrentValue(schema, i);
 
-  switch (type) {
+  switch (type)
+  {
   case TypeId::TINYINT:
   case TypeId::BOOLEAN:
     sqlite3_result_int(ctx, (int)v.GetAs<int8_t>());
@@ -240,7 +260,8 @@ int VtabColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i) {
   return SQLITE_OK;
 }
 
-int VtabRowid(sqlite3_vtab_cursor *cur, sqlite3_int64 *pRowid) {
+int VtabRowid(sqlite3_vtab_cursor *cur, sqlite3_int64 *pRowid)
+{
   // LOG_DEBUG("VtabRowid");
   Cursor *cursor = reinterpret_cast<Cursor *>(cur);
   // return rid of the tuple that cursor currently points at
@@ -249,11 +270,13 @@ int VtabRowid(sqlite3_vtab_cursor *cur, sqlite3_int64 *pRowid) {
 }
 
 int VtabUpdate(sqlite3_vtab *pVTab, int argc, sqlite3_value **argv,
-               sqlite_int64 *pRowid) {
+               sqlite_int64 *pRowid)
+{
   // LOG_DEBUG("VtabUpdate");
   VirtualTable *table = reinterpret_cast<VirtualTable *>(pVTab);
   // The single row with rowid equal to argv[0] is deleted
-  if (argc == 1) {
+  if (argc == 1)
+  {
     const RID rid(sqlite3_value_int64(argv[0]));
     // delete entry from index
     table->DeleteEntry(rid);
@@ -263,7 +286,8 @@ int VtabUpdate(sqlite3_vtab *pVTab, int argc, sqlite3_value **argv,
   // A new row is inserted with a rowid argv[1] and column values in argv[2] and
   // following. If argv[1] is an SQL NULL, the a new unique rowid is generated
   // automatically.
-  else if (argc > 1 && sqlite3_value_type(argv[0]) == SQLITE_NULL) {
+  else if (argc > 1 && sqlite3_value_type(argv[0]) == SQLITE_NULL)
+  {
     Schema *schema = table->GetSchema();
     Tuple tuple = ConstructTuple(schema, (argv + 2));
     // insert into table heap
@@ -274,7 +298,8 @@ int VtabUpdate(sqlite3_vtab *pVTab, int argc, sqlite3_value **argv,
   }
   // The row with rowid argv[0] is updated with new values in argv[2] and
   // following parameters.
-  else if (argc > 1 && sqlite3_value_type(argv[0]) != SQLITE_NULL) {
+  else if (argc > 1 && sqlite3_value_type(argv[0]) != SQLITE_NULL)
+  {
     Schema *schema = table->GetSchema();
     Tuple tuple = ConstructTuple(schema, (argv + 2));
     RID rid(sqlite3_value_int64(argv[0]));
@@ -283,7 +308,8 @@ int VtabUpdate(sqlite3_vtab *pVTab, int argc, sqlite3_value **argv,
     table->DeleteEntry(rid);
     // if true, then update succeed, rid keep the same
     // else, delete & insert
-    if (table->UpdateTuple(tuple, rid) == false) {
+    if (table->UpdateTuple(tuple, rid) == false)
+    {
       table->DeleteTuple(rid);
       // rid should be different
       table->InsertTuple(tuple, rid);
@@ -293,14 +319,16 @@ int VtabUpdate(sqlite3_vtab *pVTab, int argc, sqlite3_value **argv,
   return SQLITE_OK;
 }
 
-int VtabBegin(sqlite3_vtab *pVTab) {
+int VtabBegin(sqlite3_vtab *pVTab)
+{
   // LOG_DEBUG("VtabBegin");
   // create new transaction(write operation will call this method)
   global_parameters->transaction_ = new Transaction(0);
   return SQLITE_OK;
 }
 
-int VtabCommit(sqlite3_vtab *pVTab) {
+int VtabCommit(sqlite3_vtab *pVTab)
+{
   // LOG_DEBUG("VtabCommit");
   auto transaction = GetTransaction();
   if (transaction == nullptr)
@@ -346,7 +374,8 @@ sqlite3_module VtableModule = {
 __declspec(dllexport)
 #endif
     extern "C" int sqlite3_vtable_init(sqlite3 *db, char **pzErrMsg,
-                                       const sqlite3_api_routines *pApi) {
+                                       const sqlite3_api_routines *pApi)
+{
   std::string file_name = "vtable.db";
   // to check whether file exist or not
   struct stat buffer;
@@ -358,7 +387,8 @@ __declspec(dllexport)
   // create header page from BufferPoolManager if necessary
   page_id_t header_page_id;
   HeaderPage *header_page;
-  if (is_file_exist == false) {
+  if (is_file_exist == false)
+  {
     header_page =
         static_cast<HeaderPage *>(buffer_pool_manager->NewPage(header_page_id));
     assert(header_page_id == HEADER_PAGE_ID);
@@ -380,7 +410,8 @@ __declspec(dllexport)
 }
 
 /* Helpers */
-Schema *ParseCreateStatement(const std::string &sql_base) {
+Schema *ParseCreateStatement(const std::string &sql_base)
+{
   std::string::size_type n;
   std::vector<Column> v;
   std::string column_name;
@@ -393,7 +424,8 @@ Schema *ParseCreateStatement(const std::string &sql_base) {
   std::transform(sql.begin(), sql.end(), sql.begin(), ::tolower);
   std::vector<std::string> tok = StringUtility::Split(sql, ',');
   // iterate through returned result
-  for (std::string &t : tok) {
+  for (std::string &t : tok)
+  {
     type = INVALID;
     column_length = 0;
     // whitespace seperate column name and type
@@ -402,34 +434,53 @@ Schema *ParseCreateStatement(const std::string &sql_base) {
     column_type = t.substr(n + 1);
     // deal with varchar(size) situation
     n = column_type.find_first_of('(');
-    if (n != std::string::npos) {
+    if (n != std::string::npos)
+    {
       column_length = std::stoi(column_type.substr(n + 1));
       column_type = column_type.substr(0, n);
     }
-    if (column_type == "bool" || column_type == "boolean") {
+    if (column_type == "bool" || column_type == "boolean")
+    {
       type = BOOLEAN;
-    } else if (column_type == "tinyint") {
+    }
+    else if (column_type == "tinyint")
+    {
       type = TINYINT;
-    } else if (column_type == "smallint") {
+    }
+    else if (column_type == "smallint")
+    {
       type = SMALLINT;
-    } else if (column_type == "int" || column_type == "integer") {
+    }
+    else if (column_type == "int" || column_type == "integer")
+    {
       type = INTEGER;
-    } else if (column_type == "bigint") {
+    }
+    else if (column_type == "bigint")
+    {
       type = BIGINT;
-    } else if (column_type == "double" || column_type == "float") {
+    }
+    else if (column_type == "double" || column_type == "float")
+    {
       type = DECIMAL;
-    } else if (column_type == "varchar" || column_type == "char") {
+    }
+    else if (column_type == "varchar" || column_type == "char")
+    {
       type = VARCHAR;
       column_length = (column_length == 0) ? 32 : column_length;
     }
     // construct each column
-    if (type == INVALID) {
+    if (type == INVALID)
+    {
       throw Exception(EXCEPTION_TYPE_UNKNOWN_TYPE,
                       "unknown type for create table");
-    } else if (type == VARCHAR) {
+    }
+    else if (type == VARCHAR)
+    {
       Column col(type, column_length, column_name);
       v.emplace_back(col);
-    } else {
+    }
+    else
+    {
       Column col(type, Type::GetTypeSize(type), column_name);
       v.emplace_back(col);
     }
@@ -442,7 +493,8 @@ Schema *ParseCreateStatement(const std::string &sql_base) {
 
 IndexMetadata *ParseIndexStatement(std::string &sql,
                                    const std::string &table_name,
-                                   Schema *schema) {
+                                   Schema *schema)
+{
   std::string::size_type n;
   std::string index_name;
   std::vector<int> key_attrs;
@@ -457,7 +509,8 @@ IndexMetadata *ParseIndexStatement(std::string &sql,
 
   std::vector<std::string> tok = StringUtility::Split(sql, ',');
   // iterate through returned result
-  for (std::string &t : tok) {
+  for (std::string &t : tok)
+  {
     StringUtility::Trim(t);
     column_id = schema->GetColumnID(t);
     if (column_id != -1)
@@ -473,15 +526,18 @@ IndexMetadata *ParseIndexStatement(std::string &sql,
   return metadata;
 }
 
-Tuple ConstructTuple(Schema *schema, sqlite3_value **argv) {
+Tuple ConstructTuple(Schema *schema, sqlite3_value **argv)
+{
   int column_count = schema->GetColumnCount();
   Value v(TypeId::INVALID);
   std::vector<Value> values;
   // iterate through schema, generate column value to insert
-  for (int i = 0; i < column_count; i++) {
+  for (int i = 0; i < column_count; i++)
+  {
     TypeId type = schema->GetType(i);
 
-    switch (type) {
+    switch (type)
+    {
     case TypeId::BOOLEAN:
     case TypeId::INTEGER:
     case TypeId::SMALLINT:
@@ -511,26 +567,36 @@ Tuple ConstructTuple(Schema *schema, sqlite3_value **argv) {
 // serve the functionality of index factory
 Index *ConstructIndex(IndexMetadata *metadata,
                       BufferPoolManager *buffer_pool_manager,
-                      page_id_t root_id) {
+                      page_id_t root_id)
+{
   // The size of the key in bytes
   Schema *key_schema = metadata->GetKeySchema();
   int key_size = key_schema->GetLength();
   // for each varchar attribute, we assume the largest size is 16 bytes
   key_size += 16 * key_schema->GetUnlinedColumnCount();
 
-  if (key_size <= 4) {
+  if (key_size <= 4)
+  {
     return new BPlusTreeIndex<GenericKey<4>, RID, GenericComparator<4>>(
         metadata, buffer_pool_manager, root_id);
-  } else if (key_size <= 8) {
+  }
+  else if (key_size <= 8)
+  {
     return new BPlusTreeIndex<GenericKey<8>, RID, GenericComparator<8>>(
         metadata, buffer_pool_manager, root_id);
-  } else if (key_size <= 16) {
+  }
+  else if (key_size <= 16)
+  {
     return new BPlusTreeIndex<GenericKey<16>, RID, GenericComparator<16>>(
         metadata, buffer_pool_manager, root_id);
-  } else if (key_size <= 32) {
+  }
+  else if (key_size <= 32)
+  {
     return new BPlusTreeIndex<GenericKey<32>, RID, GenericComparator<32>>(
         metadata, buffer_pool_manager, root_id);
-  } else {
+  }
+  else
+  {
     return new BPlusTreeIndex<GenericKey<64>, RID, GenericComparator<64>>(
         metadata, buffer_pool_manager, root_id);
   }

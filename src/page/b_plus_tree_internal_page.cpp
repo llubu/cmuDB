@@ -7,7 +7,8 @@
 #include "common/exception.h"
 #include "page/b_plus_tree_internal_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 /*****************************************************************************
  * HELPER METHODS AND UTILITIES
  *****************************************************************************/
@@ -24,7 +25,8 @@ void B_PLUS_TREE_INTERNAL_PAGE_TYPE::Init(page_id_t page_id,
  * array offset)
  */
 INDEX_TEMPLATE_ARGUMENTS
-KeyType B_PLUS_TREE_INTERNAL_PAGE_TYPE::KeyAt(int index) const {
+KeyType B_PLUS_TREE_INTERNAL_PAGE_TYPE::KeyAt(int index) const
+{
   // replace with your own code
   KeyType key;
   return key;
@@ -38,7 +40,8 @@ void B_PLUS_TREE_INTERNAL_PAGE_TYPE::SetKeyAt(int index, const KeyType &key) {}
  * equals to input "value"
  */
 INDEX_TEMPLATE_ARGUMENTS
-int B_PLUS_TREE_INTERNAL_PAGE_TYPE::ValueIndex(const ValueType &value) const {
+int B_PLUS_TREE_INTERNAL_PAGE_TYPE::ValueIndex(const ValueType &value) const
+{
   return 0;
 }
 
@@ -60,7 +63,8 @@ ValueType B_PLUS_TREE_INTERNAL_PAGE_TYPE::ValueAt(int index) const { return 0; }
 INDEX_TEMPLATE_ARGUMENTS
 ValueType
 B_PLUS_TREE_INTERNAL_PAGE_TYPE::Lookup(const KeyType &key,
-                                       const KeyComparator &comparator) const {
+                                       const KeyComparator &comparator) const
+{
   return INVALID_PAGE_ID;
 }
 
@@ -85,7 +89,8 @@ void B_PLUS_TREE_INTERNAL_PAGE_TYPE::PopulateNewRoot(
 INDEX_TEMPLATE_ARGUMENTS
 int B_PLUS_TREE_INTERNAL_PAGE_TYPE::InsertNodeAfter(
     const ValueType &old_value, const KeyType &new_key,
-    const ValueType &new_value) {
+    const ValueType &new_value)
+{
   return 0;
 }
 
@@ -120,7 +125,8 @@ void B_PLUS_TREE_INTERNAL_PAGE_TYPE::Remove(int index) {}
  * NOTE: only call this method within AdjustRoot()(in b_plus_tree.cpp)
  */
 INDEX_TEMPLATE_ARGUMENTS
-ValueType B_PLUS_TREE_INTERNAL_PAGE_TYPE::RemoveAndReturnOnlyChild() {
+ValueType B_PLUS_TREE_INTERNAL_PAGE_TYPE::RemoveAndReturnOnlyChild()
+{
   return INVALID_PAGE_ID;
 }
 /*****************************************************************************
@@ -175,8 +181,10 @@ void B_PLUS_TREE_INTERNAL_PAGE_TYPE::CopyFirstFrom(
 INDEX_TEMPLATE_ARGUMENTS
 void B_PLUS_TREE_INTERNAL_PAGE_TYPE::QueueUpChildren(
     std::queue<BPlusTreePage *> *queue,
-    BufferPoolManager *buffer_pool_manager) {
-  for (int i = 0; i < GetSize(); i++) {
+    BufferPoolManager *buffer_pool_manager)
+{
+  for (int i = 0; i < GetSize(); i++)
+  {
     auto *page = buffer_pool_manager->FetchPage(array[i].second);
     if (page == nullptr)
       throw Exception(EXCEPTION_TYPE_INDEX,
@@ -188,12 +196,15 @@ void B_PLUS_TREE_INTERNAL_PAGE_TYPE::QueueUpChildren(
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-std::string B_PLUS_TREE_INTERNAL_PAGE_TYPE::ToString(bool verbose) const {
-  if (GetSize() == 0) {
+std::string B_PLUS_TREE_INTERNAL_PAGE_TYPE::ToString(bool verbose) const
+{
+  if (GetSize() == 0)
+  {
     return "";
   }
   std::ostringstream os;
-  if (verbose) {
+  if (verbose)
+  {
     os << "[pageId: " << GetPageId() << " parentId: " << GetParentPageId()
        << "]<" << GetSize() << "> ";
   }
@@ -201,14 +212,19 @@ std::string B_PLUS_TREE_INTERNAL_PAGE_TYPE::ToString(bool verbose) const {
   int entry = verbose ? 0 : 1;
   int end = GetSize();
   bool first = true;
-  while (entry < end) {
-    if (first) {
+  while (entry < end)
+  {
+    if (first)
+    {
       first = false;
-    } else {
+    }
+    else
+    {
       os << " ";
     }
     os << std::dec << array[entry].first.ToString();
-    if (verbose) {
+    if (verbose)
+    {
       os << "(" << array[entry].second << ")";
     }
     ++entry;
@@ -218,13 +234,13 @@ std::string B_PLUS_TREE_INTERNAL_PAGE_TYPE::ToString(bool verbose) const {
 
 // valuetype for internalNode should be page id_t
 template class BPlusTreeInternalPage<GenericKey<4>, page_id_t,
-                                           GenericComparator<4>>;
+                                     GenericComparator<4>>;
 template class BPlusTreeInternalPage<GenericKey<8>, page_id_t,
-                                           GenericComparator<8>>;
+                                     GenericComparator<8>>;
 template class BPlusTreeInternalPage<GenericKey<16>, page_id_t,
-                                           GenericComparator<16>>;
+                                     GenericComparator<16>>;
 template class BPlusTreeInternalPage<GenericKey<32>, page_id_t,
-                                           GenericComparator<32>>;
+                                     GenericComparator<32>>;
 template class BPlusTreeInternalPage<GenericKey<64>, page_id_t,
-                                           GenericComparator<64>>;
+                                     GenericComparator<64>>;
 } // namespace cmudb

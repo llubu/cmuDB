@@ -6,10 +6,12 @@
 #include "type/type.h"
 #include "type/value.h"
 
-namespace cmudb {
+namespace cmudb
+{
 // A boolean value isn't a real SQL type, but we treat it as one to keep
 // consistent in the expression subsystem.
-class BooleanType : public Type {
+class BooleanType : public Type
+{
 public:
   ~BooleanType() {}
   BooleanType();

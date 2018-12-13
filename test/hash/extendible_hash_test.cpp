@@ -7,9 +7,11 @@
 #include "hash/extendible_hash.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-TEST(ExtendibleHashTest, SampleTest) {
+TEST(ExtendibleHashTest, SampleTest)
+{
   // set leaf size as 2
   ExtendibleHash<int, std::string> *test =
       new ExtendibleHash<int, std::string>(2);
@@ -48,23 +50,28 @@ TEST(ExtendibleHashTest, SampleTest) {
   delete test;
 }
 
-TEST(ExtendibleHashTest, ConcurrentInsertTest) {
+TEST(ExtendibleHashTest, ConcurrentInsertTest)
+{
   const int num_runs = 50;
   const int num_threads = 3;
   // Run concurrent test multiple times to guarantee correctness.
-  for (int run = 0; run < num_runs; run++) {
+  for (int run = 0; run < num_runs; run++)
+  {
     std::shared_ptr<ExtendibleHash<int, int>> test{new ExtendibleHash<int, int>(2)};
     std::vector<std::thread> threads;
-    for (int tid = 0; tid < num_threads; tid++) {
+    for (int tid = 0; tid < num_threads; tid++)
+    {
       threads.push_back(std::thread([tid, &test]() {
         test->Insert(tid, tid);
       }));
     }
-    for (int i = 0; i < num_threads; i++) {
+    for (int i = 0; i < num_threads; i++)
+    {
       threads[i].join();
     }
     EXPECT_EQ(test->GetGlobalDepth(), 1);
-    for (int i = 0; i < num_threads; i++) {
+    for (int i = 0; i < num_threads; i++)
+    {
       int val;
       EXPECT_TRUE(test->Find(i, val));
       EXPECT_EQ(val, i);
@@ -72,24 +79,29 @@ TEST(ExtendibleHashTest, ConcurrentInsertTest) {
   }
 }
 
-TEST(ExtendibleHashTest, ConcurrentRemoveTest) {
+TEST(ExtendibleHashTest, ConcurrentRemoveTest)
+{
   const int num_threads = 5;
   const int num_runs = 50;
-  for (int run = 0; run < num_runs; run++) {
+  for (int run = 0; run < num_runs; run++)
+  {
     std::shared_ptr<ExtendibleHash<int, int>> test{new ExtendibleHash<int, int>(2)};
     std::vector<std::thread> threads;
     std::vector<int> values{0, 10, 16, 32, 64};
-    for (int value : values) {
+    for (int value : values)
+    {
       test->Insert(value, value);
     }
     EXPECT_EQ(test->GetGlobalDepth(), 6);
-    for (int tid = 0; tid < num_threads; tid++) {
+    for (int tid = 0; tid < num_threads; tid++)
+    {
       threads.push_back(std::thread([tid, &test, &values]() {
         test->Remove(values[tid]);
         test->Insert(tid + 4, tid + 4);
       }));
     }
-    for (int i = 0; i < num_threads; i++) {
+    for (int i = 0; i < num_threads; i++)
+    {
       threads[i].join();
     }
     EXPECT_EQ(test->GetGlobalDepth(), 6);

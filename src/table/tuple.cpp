@@ -9,9 +9,11 @@
 #include "common/logger.h"
 #include "table/tuple.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-Tuple::Tuple(std::vector<Value> values, Schema *schema) : allocated_(true) {
+Tuple::Tuple(std::vector<Value> values, Schema *schema) : allocated_(true)
+{
   assert((int)values.size() == schema->GetColumnCount());
 
   // step1: calculate size of the tuple
@@ -25,14 +27,18 @@ Tuple::Tuple(std::vector<Value> values, Schema *schema) : allocated_(true) {
   // step2: Serialize each column(attribute) based on input value
   int column_count = schema->GetColumnCount();
   int32_t offset = schema->GetLength();
-  for (int i = 0; i < column_count; i++) {
-    if (!schema->IsInlined(i)) {
+  for (int i = 0; i < column_count; i++)
+  {
+    if (!schema->IsInlined(i))
+    {
       // Serialize relative offset, where the actual varchar data is stored
       *reinterpret_cast<int32_t *>(data_ + schema->GetOffset(i)) = offset;
       // Serialize varchar value, in place(size+data)
       values[i].SerializeTo(data_ + offset);
       offset += (values[i].GetLength() + sizeof(uint32_t));
-    } else {
+    }
+    else
+    {
       values[i].SerializeTo(data_ + schema->GetOffset(i));
     }
   }
@@ -40,20 +46,25 @@ Tuple::Tuple(std::vector<Value> values, Schema *schema) : allocated_(true) {
 
 // Copy constructor
 Tuple::Tuple(const Tuple &other)
-    : allocated_(other.allocated_), rid_(other.rid_), size_(other.size_) {
+    : allocated_(other.allocated_), rid_(other.rid_), size_(other.size_)
+{
   // deep copy
-  if (allocated_ == true) {
+  if (allocated_ == true)
+  {
     // LOG_DEBUG("tuple deep copy");
     data_ = new char[size_];
     memcpy(data_, other.data_, size_);
-  } else {
+  }
+  else
+  {
     // LOG_DEBUG("tuple shallow copy");
     data_ = other.data_;
   }
 }
 
 // Get the value of a specified column (const)
-Value Tuple::GetValue(Schema *schema, const int column_id) const {
+Value Tuple::GetValue(Schema *schema, const int column_id) const
+{
   assert(schema);
   assert(data_);
   const TypeId column_type = schema->GetType(column_id);
@@ -62,14 +73,16 @@ Value Tuple::GetValue(Schema *schema, const int column_id) const {
   return Value::DeserializeFrom(data_ptr, column_type);
 }
 
-const char *Tuple::GetDataPtr(Schema *schema, const int column_id) const {
+const char *Tuple::GetDataPtr(Schema *schema, const int column_id) const
+{
   assert(schema);
   assert(data_);
   bool is_inlined = schema->IsInlined(column_id);
   // for inline type, data are stored where they are
   if (is_inlined)
     return (data_ + schema->GetOffset(column_id));
-  else {
+  else
+  {
     // step1: read relative offset from tuple data
     int32_t offset =
         *reinterpret_cast<int32_t *>(data_ + schema->GetOffset(column_id));
@@ -78,21 +91,29 @@ const char *Tuple::GetDataPtr(Schema *schema, const int column_id) const {
   }
 }
 
-std::string Tuple::ToString(Schema *schema) const {
+std::string Tuple::ToString(Schema *schema) const
+{
   std::stringstream os;
 
   int column_count = schema->GetColumnCount();
   bool first = true;
   os << "(";
-  for (int column_itr = 0; column_itr < column_count; column_itr++) {
-    if (first) {
+  for (int column_itr = 0; column_itr < column_count; column_itr++)
+  {
+    if (first)
+    {
       first = false;
-    } else {
+    }
+    else
+    {
       os << ", ";
     }
-    if (IsNull(schema, column_itr)) {
+    if (IsNull(schema, column_itr))
+    {
       os << "<NULL>";
-    } else {
+    }
+    else
+    {
       Value val = (GetValue(schema, column_itr));
       os << val.ToString();
     }

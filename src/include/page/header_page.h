@@ -17,9 +17,11 @@
 
 #include <cstring>
 
-namespace cmudb {
+namespace cmudb
+{
 
-class HeaderPage : public Page {
+class HeaderPage : public Page
+{
 public:
   void Init() { SetRecordCount(0); }
   /**

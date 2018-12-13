@@ -6,21 +6,28 @@
 
 #include "catalog/column.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-void Column::SetLength(int32_t column_length) {
+void Column::SetLength(int32_t column_length)
+{
   // Set the column length based on whether it is inlined
-  if (is_inlined) {
+  if (is_inlined)
+  {
     fixed_length = column_length;
     variable_length = 0;
-  } else {
+  }
+  else
+  {
     fixed_length = sizeof(int32_t);
     variable_length = column_length;
   }
 }
 
-void Column::SetInlined() {
-  switch (column_type) {
+void Column::SetInlined()
+{
+  switch (column_type)
+  {
   case TypeId::VARCHAR:
     is_inlined = false;
     break;
@@ -31,16 +38,20 @@ void Column::SetInlined() {
   }
 }
 
-std::string Column::ToString() const {
+std::string Column::ToString() const
+{
   std::ostringstream os;
 
   os << "Column[" << column_name << ", " << Type::TypeIdToString(column_type)
      << ", "
      << "Offset:" << column_offset << ", ";
 
-  if (is_inlined) {
+  if (is_inlined)
+  {
     os << "FixedLength:" << fixed_length;
-  } else {
+  }
+  else
+  {
     os << "VarLength:" << variable_length;
   }
   os << "]";

@@ -9,18 +9,22 @@
 #include "common/exception.h"
 #include "type/type.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
-class Column {
+class Column
+{
   friend class Schema;
 
 public:
-  Column() : column_type(TypeId::INVALID), fixed_length(-1) {
+  Column() : column_type(TypeId::INVALID), fixed_length(-1)
+  {
     // Nothing to see...
   }
 
   Column(TypeId value_type, int32_t column_length, std::string column_name)
-      : column_type(value_type), fixed_length(-1), column_name(column_name) {
+      : column_type(value_type), fixed_length(-1), column_name(column_name)
+  {
     // only VARCHAR type is not inlined store
     SetInlined();
     // We should not have an inline value of length 0
@@ -45,7 +49,8 @@ public:
 
   std::string GetName() const { return column_name; }
 
-  int32_t GetLength() const {
+  int32_t GetLength() const
+  {
     if (is_inlined)
       return fixed_length;
     else
@@ -61,8 +66,10 @@ public:
   inline bool IsInlined() const { return is_inlined; }
 
   // Compare two column objects
-  bool operator==(const Column &other) const {
-    if (other.column_type != column_type || other.is_inlined != is_inlined) {
+  bool operator==(const Column &other) const
+  {
+    if (other.column_type != column_type || other.is_inlined != is_inlined)
+    {
       return false;
     }
     return true;

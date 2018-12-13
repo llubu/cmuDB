@@ -15,7 +15,8 @@
 #include "page/page.h"
 #include "table/tuple.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /**
  * Transaction states:
@@ -26,14 +27,26 @@ namespace cmudb {
  *    |__________|________________________^
  *
  **/
-enum class TransactionState { GROWING, SHRINKING, COMMITTED, ABORTED };
+enum class TransactionState
+{
+  GROWING,
+  SHRINKING,
+  COMMITTED,
+  ABORTED
+};
 
-enum class WType { INSERT = 0, DELETE, UPDATE };
+enum class WType
+{
+  INSERT = 0,
+  DELETE,
+  UPDATE
+};
 
 class TableHeap;
 
 // write set record
-class WriteRecord {
+class WriteRecord
+{
 public:
   WriteRecord(RID rid, WType wtype, const Tuple &tuple, TableHeap *table)
       : rid_(rid), wtype_(wtype), tuple_(tuple), table_(table) {}
@@ -46,14 +59,16 @@ public:
   TableHeap *table_;
 };
 
-class Transaction {
+class Transaction
+{
 public:
   Transaction(Transaction const &) = delete;
   Transaction(txn_id_t txn_id)
       : state_(TransactionState::GROWING),
         thread_id_(std::this_thread::get_id()),
         txn_id_(txn_id), shared_lock_set_{new std::unordered_set<RID>},
-        exclusive_lock_set_{new std::unordered_set<RID>} {
+        exclusive_lock_set_{new std::unordered_set<RID>}
+  {
     // initialize sets
     write_set_.reset(new std::deque<WriteRecord>);
     page_set_.reset(new std::deque<Page *>);
@@ -69,7 +84,8 @@ public:
 
   inline txn_id_t GetTransactionId() const { return txn_id_; }
 
-  inline std::shared_ptr<std::deque<WriteRecord>> GetWriteSet() {
+  inline std::shared_ptr<std::deque<WriteRecord>> GetWriteSet()
+  {
     return write_set_;
   }
 
@@ -77,19 +93,23 @@ public:
 
   inline void AddIntoPageSet(Page *page) { page_set_->push_back(page); }
 
-  inline std::shared_ptr<std::unordered_set<page_id_t>> GetDeletedPageSet() {
+  inline std::shared_ptr<std::unordered_set<page_id_t>> GetDeletedPageSet()
+  {
     return deleted_page_set_;
   }
 
-  inline void AddIntoDeletedPageSet(page_id_t page_id) {
+  inline void AddIntoDeletedPageSet(page_id_t page_id)
+  {
     deleted_page_set_->insert(page_id);
   }
 
-  inline std::shared_ptr<std::unordered_set<RID>> GetSharedLockSet() {
+  inline std::shared_ptr<std::unordered_set<RID>> GetSharedLockSet()
+  {
     return shared_lock_set_;
   }
 
-  inline std::shared_ptr<std::unordered_set<RID>> GetExclusiveLockSet() {
+  inline std::shared_ptr<std::unordered_set<RID>> GetExclusiveLockSet()
+  {
     return exclusive_lock_set_;
   }
 

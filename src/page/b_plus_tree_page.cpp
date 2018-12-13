@@ -3,7 +3,8 @@
  */
 #include "page/b_plus_tree_page.h"
 
-namespace cmudb {
+namespace cmudb
+{
 
 /*
  * Helper methods to get/set page type

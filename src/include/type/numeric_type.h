@@ -6,11 +6,13 @@
 
 #include "type/value.h"
 
-namespace cmudb {
+namespace cmudb
+{
 // A numeric value is an abstract type representing a number. Numerics can be
 // either integral or non-integral (decimal), but must provide arithmetic
 // operations on its value.
-class NumericType : public Type {
+class NumericType : public Type
+{
 public:
   NumericType(TypeId type) : Type(type) {}
   ~NumericType() {}
@@ -28,7 +30,8 @@ public:
   virtual bool IsZero(const Value &val) const = 0;
 
 protected:
-  static inline double ValMod(double x, double y) {
+  static inline double ValMod(double x, double y)
+  {
     return x - std::trunc((double)x / (double)y) * y;
   }
 };

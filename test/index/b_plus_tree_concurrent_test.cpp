@@ -15,19 +15,23 @@
 #include "vtable/virtual_table.h"
 #include "gtest/gtest.h"
 
-namespace cmudb {
+namespace cmudb
+{
 // helper function to launch multiple threads
 template <typename... Args>
-void LaunchParallelTest(uint64_t num_threads, Args &&... args) {
+void LaunchParallelTest(uint64_t num_threads, Args &&... args)
+{
   std::vector<std::thread> thread_group;
 
   // Launch a group of threads
-  for (uint64_t thread_itr = 0; thread_itr < num_threads; ++thread_itr) {
+  for (uint64_t thread_itr = 0; thread_itr < num_threads; ++thread_itr)
+  {
     thread_group.push_back(std::thread(args..., thread_itr));
   }
 
   // Join the threads with the main thread
-  for (uint64_t thread_itr = 0; thread_itr < num_threads; ++thread_itr) {
+  for (uint64_t thread_itr = 0; thread_itr < num_threads; ++thread_itr)
+  {
     thread_group[thread_itr].join();
   }
 }
@@ -35,12 +39,14 @@ void LaunchParallelTest(uint64_t num_threads, Args &&... args) {
 // helper function to insert
 void InsertHelper(BPlusTree<GenericKey<8>, RID, GenericComparator<8>> &tree,
                   const std::vector<int64_t> &keys,
-                  __attribute__((unused)) uint64_t thread_itr = 0) {
+                  __attribute__((unused)) uint64_t thread_itr = 0)
+{
   GenericKey<8> index_key;
   RID rid;
   // create transaction
   Transaction *transaction = new Transaction(0);
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     int64_t value = key & 0xFFFFFFFF;
     rid.Set((int32_t)(key >> 32), value);
     index_key.SetFromInteger(key);
@@ -53,13 +59,16 @@ void InsertHelper(BPlusTree<GenericKey<8>, RID, GenericComparator<8>> &tree,
 void InsertHelperSplit(
     BPlusTree<GenericKey<8>, RID, GenericComparator<8>> &tree,
     const std::vector<int64_t> &keys, int total_threads,
-    __attribute__((unused)) uint64_t thread_itr) {
+    __attribute__((unused)) uint64_t thread_itr)
+{
   GenericKey<8> index_key;
   RID rid;
   // create transaction
   Transaction *transaction = new Transaction(0);
-  for (auto key : keys) {
-    if ((uint64_t)key % total_threads == thread_itr) {
+  for (auto key : keys)
+  {
+    if ((uint64_t)key % total_threads == thread_itr)
+    {
       int64_t value = key & 0xFFFFFFFF;
       rid.Set((int32_t)(key >> 32), value);
       index_key.SetFromInteger(key);
@@ -72,11 +81,13 @@ void InsertHelperSplit(
 // helper function to delete
 void DeleteHelper(BPlusTree<GenericKey<8>, RID, GenericComparator<8>> &tree,
                   const std::vector<int64_t> &remove_keys,
-                  __attribute__((unused)) uint64_t thread_itr = 0) {
+                  __attribute__((unused)) uint64_t thread_itr = 0)
+{
   GenericKey<8> index_key;
   // create transaction
   Transaction *transaction = new Transaction(0);
-  for (auto key : remove_keys) {
+  for (auto key : remove_keys)
+  {
     index_key.SetFromInteger(key);
     tree.Remove(index_key, transaction);
   }
@@ -87,12 +98,15 @@ void DeleteHelper(BPlusTree<GenericKey<8>, RID, GenericComparator<8>> &tree,
 void DeleteHelperSplit(
     BPlusTree<GenericKey<8>, RID, GenericComparator<8>> &tree,
     const std::vector<int64_t> &remove_keys, int total_threads,
-    __attribute__((unused)) uint64_t thread_itr) {
+    __attribute__((unused)) uint64_t thread_itr)
+{
   GenericKey<8> index_key;
   // create transaction
   Transaction *transaction = new Transaction(0);
-  for (auto key : remove_keys) {
-    if ((uint64_t)key % total_threads == thread_itr) {
+  for (auto key : remove_keys)
+  {
+    if ((uint64_t)key % total_threads == thread_itr)
+    {
       index_key.SetFromInteger(key);
       tree.Remove(index_key, transaction);
     }
@@ -100,7 +114,8 @@ void DeleteHelperSplit(
   delete transaction;
 }
 
-TEST(BPlusTreeConcurrentTest, InsertTest1) {
+TEST(BPlusTreeConcurrentTest, InsertTest1)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -115,14 +130,16 @@ TEST(BPlusTreeConcurrentTest, InsertTest1) {
   // keys to Insert
   std::vector<int64_t> keys;
   int64_t scale_factor = 100;
-  for (int64_t key = 1; key < scale_factor; key++) {
+  for (int64_t key = 1; key < scale_factor; key++)
+  {
     keys.push_back(key);
   }
   LaunchParallelTest(2, InsertHelper, std::ref(tree), keys);
 
   std::vector<RID> rids;
   GenericKey<8> index_key;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -136,7 +153,8 @@ TEST(BPlusTreeConcurrentTest, InsertTest1) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -150,7 +168,8 @@ TEST(BPlusTreeConcurrentTest, InsertTest1) {
   remove("test.db");
 }
 
-TEST(BPlusTreeConcurrentTest, InsertTest2) {
+TEST(BPlusTreeConcurrentTest, InsertTest2)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -165,14 +184,16 @@ TEST(BPlusTreeConcurrentTest, InsertTest2) {
   // keys to Insert
   std::vector<int64_t> keys;
   int64_t scale_factor = 100;
-  for (int64_t key = 1; key < scale_factor; key++) {
+  for (int64_t key = 1; key < scale_factor; key++)
+  {
     keys.push_back(key);
   }
   LaunchParallelTest(2, InsertHelperSplit, std::ref(tree), keys, 2);
 
   std::vector<RID> rids;
   GenericKey<8> index_key;
-  for (auto key : keys) {
+  for (auto key : keys)
+  {
     rids.clear();
     index_key.SetFromInteger(key);
     tree.GetValue(index_key, rids);
@@ -186,7 +207,8 @@ TEST(BPlusTreeConcurrentTest, InsertTest2) {
   int64_t current_key = start_key;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -200,7 +222,8 @@ TEST(BPlusTreeConcurrentTest, InsertTest2) {
   remove("test.db");
 }
 
-TEST(BPlusTreeConcurrentTest, DeleteTest1) {
+TEST(BPlusTreeConcurrentTest, DeleteTest1)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -226,7 +249,8 @@ TEST(BPlusTreeConcurrentTest, DeleteTest1) {
   int64_t size = 0;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -241,7 +265,8 @@ TEST(BPlusTreeConcurrentTest, DeleteTest1) {
   remove("test.db");
 }
 
-TEST(BPlusTreeConcurrentTest, DeleteTest2) {
+TEST(BPlusTreeConcurrentTest, DeleteTest2)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -268,7 +293,8 @@ TEST(BPlusTreeConcurrentTest, DeleteTest2) {
   int64_t size = 0;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     auto location = (*iterator).second;
     EXPECT_EQ(location.GetPageId(), 0);
     EXPECT_EQ(location.GetSlotNum(), current_key);
@@ -283,7 +309,8 @@ TEST(BPlusTreeConcurrentTest, DeleteTest2) {
   remove("test.db");
 }
 
-TEST(BPlusTreeConcurrentTest, MixTest) {
+TEST(BPlusTreeConcurrentTest, MixTest)
+{
   // create KeyComparator and index schema
   Schema *key_schema = ParseCreateStatement("a bigint");
   GenericComparator<8> comparator(key_schema);
@@ -315,7 +342,8 @@ TEST(BPlusTreeConcurrentTest, MixTest) {
   int64_t size = 0;
   index_key.SetFromInteger(start_key);
   for (auto iterator = tree.Begin(index_key); iterator.isEnd() == false;
-       ++iterator) {
+       ++iterator)
+  {
     size = size + 1;
   }
 
