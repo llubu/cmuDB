@@ -51,16 +51,13 @@ BufferPoolManager::~BufferPoolManager()
 Page *BufferPoolManager::FetchPage(page_id_t page_id)
 {
   std::unique_lock<std::mutex> lock(latch_);
-
   // temporary page
   Page *tmp_page = nullptr;
-
   if (page_table_->Find(page_id, tmp_page))
   {
     tmp_page->pin_count_++;
     return tmp_page;
   }
-
   // find replacement entry
   if (free_list_->size())
   {
@@ -71,16 +68,11 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id)
   {
     return nullptr;
   }
-
   if (tmp_page->is_dirty_)
   {
-    tmp_page->RLatch();
-    disk_manager_.WritePage(tmp_page->GetPageId(), tmp_page->GetData());
-    tmp_page->RUnlatch();
+    FlushPage(tmp_page->GetPageId());
   }
-
   page_table_->Remove(page_id);
-
   tmp_page = new Page();
   tmp_page->page_id_ = page_id;
   tmp_page->pin_count_++;
@@ -102,7 +94,6 @@ bool BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty)
 {
   std::lock_guard<std::mutex> lock(latch_);
   Page *tmp_page = nullptr;
-
   if (page_table_->Find(page_id, tmp_page))
   {
     if (tmp_page->pin_count_ > 0)
@@ -113,7 +104,6 @@ bool BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty)
         replacer_->Insert(tmp_page);
       }
       tmp_page->is_dirty_ |= is_dirty;
-
       return true;
     }
     else
@@ -121,7 +111,6 @@ bool BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty)
       return false;
     }
   }
-
   return false;
 }
 
@@ -136,15 +125,13 @@ bool BufferPoolManager::FlushPage(page_id_t page_id)
   if (page_id == INVALID_PAGE_ID)
     return false;
 
-  std::lock_guard<std::mutex> lock(latch_);
   Page *tmp_page = nullptr;
-
   if (page_table_->Find(page_id, tmp_page))
   {
-    tmp_page->RLatch();
+    tmp_page->WLatch();
     disk_manager_.WritePage(tmp_page->GetPageId(), tmp_page->GetData());
-    tmp_page->RUnlatch();
-
+    tmp_page->is_dirty_ = false;
+    tmp_page->WUnlatch();
     return true;
   }
   return false;
@@ -156,12 +143,8 @@ bool BufferPoolManager::FlushPage(page_id_t page_id)
 void BufferPoolManager::FlushAllPages()
 {
   for (size_t i = 0; i < pool_size_; ++i)
-  {
     if (pages_[i].is_dirty_)
-    {
       FlushPage(pages_[i].GetPageId());
-    }
-  }
 }
 
 /**
@@ -202,10 +185,8 @@ bool BufferPoolManager::DeletePage(page_id_t page_id)
 Page *BufferPoolManager::NewPage(page_id_t &page_id)
 {
   std::lock_guard<std::mutex> lock(latch_);
-
   // temporary page
   Page *tmp_page = nullptr;
-
   // find a free entry in free_list
   if (free_list_->size())
   {
@@ -218,19 +199,15 @@ Page *BufferPoolManager::NewPage(page_id_t &page_id)
   }
 
   if (tmp_page->is_dirty_)
-  {
-    tmp_page->RLatch();
-    disk_manager_.WritePage(tmp_page->GetPageId(), tmp_page->GetData());
-    tmp_page->RUnlatch();
-  }
+    FlushPage(tmp_page->GetPageId());
 
   // update new page's metadata
+  tmp_page = new Page;
   page_id = disk_manager_.AllocatePage();
   tmp_page->page_id_ = page_id;
   tmp_page->pin_count_++;
 
   page_table_->Insert(page_id, tmp_page);
-
   return tmp_page;
 }
 

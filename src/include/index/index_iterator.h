@@ -17,6 +17,9 @@ class IndexIterator
 public:
   // you may define your own constructor based on your member variables
   IndexIterator();
+  IndexIterator(BufferPoolManager *buffer_pool_manager,
+                B_PLUS_TREE_LEAF_PAGE_TYPE *leaf_page,
+                int offset);
   ~IndexIterator();
 
   bool isEnd();
@@ -27,6 +30,9 @@ public:
 
 private:
   // add your own private member variables here
+  BufferPoolManager *buffer_pool_manager_;
+  B_PLUS_TREE_LEAF_PAGE_TYPE *leaf_page_;
+  int offset_;
 };
 
 } // namespace cmudb

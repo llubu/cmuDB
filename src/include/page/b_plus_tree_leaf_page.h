@@ -24,14 +24,12 @@
 
 #include "page/b_plus_tree_page.h"
 
-namespace cmudb
-{
-#define B_PLUS_TREE_LEAF_PAGE_TYPE \
+namespace cmudb {
+#define B_PLUS_TREE_LEAF_PAGE_TYPE                                             \
   BPlusTreeLeafPage<KeyType, ValueType, KeyComparator>
 
 INDEX_TEMPLATE_ARGUMENTS
-class BPlusTreeLeafPage : public BPlusTreePage
-{
+class BPlusTreeLeafPage : public BPlusTreePage {
 
 public:
   // After creating a new leaf page from buffer pool, must call initialize
@@ -54,8 +52,8 @@ public:
   // Split and Merge utility methods
   void MoveHalfTo(BPlusTreeLeafPage *recipient,
                   BufferPoolManager *buffer_pool_manager /* Unused */);
-  void MoveAllTo(BPlusTreeLeafPage *recipient, int /* Unused */,
-                 BufferPoolManager * /* Unused */);
+  void MoveAllTo(BPlusTreeLeafPage *recipient, int index_in_parent,
+                 BufferPoolManager *buffer_pool_manager);
   void MoveFirstToEndOf(BPlusTreeLeafPage *recipient,
                         BufferPoolManager *buffer_pool_manager);
   void MoveLastToFrontOf(BPlusTreeLeafPage *recipient, int parentIndex,
@@ -70,6 +68,6 @@ private:
   void CopyFirstFrom(const MappingType &item, int parentIndex,
                      BufferPoolManager *buffer_pool_manager);
   page_id_t next_page_id_;
-  MappingType array[0];
+  MappingType *array;
 };
 } // namespace cmudb

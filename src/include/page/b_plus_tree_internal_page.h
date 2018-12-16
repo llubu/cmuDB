@@ -69,6 +69,6 @@ private:
                     BufferPoolManager *buffer_pool_manager);
   void CopyFirstFrom(const MappingType &pair, int parent_index,
                      BufferPoolManager *buffer_pool_manager);
-  MappingType array[0];
+  MappingType *array;
 };
 } // namespace cmudb

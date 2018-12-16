@@ -26,6 +26,14 @@ namespace cmudb
 INDEX_TEMPLATE_ARGUMENTS
 class BPlusTree
 {
+  // Using in function search_leaf_page
+  enum class SearchType
+  {
+    Find,
+    Insert,
+    Delete
+  };
+
 public:
   explicit BPlusTree(const std::string &name,
                      BufferPoolManager *buffer_pool_manager,
@@ -62,7 +70,9 @@ public:
                       Transaction *transaction = nullptr);
   // expose for test purpose
   B_PLUS_TREE_LEAF_PAGE_TYPE *FindLeafPage(const KeyType &key,
+                                           SearchType option = SearchType::Find,
                                            bool leftMost = false);
+  bool IsSafe(BPlusTreePage *node, SearchType option);
 
 private:
   void StartNewTree(const KeyType &key, const ValueType &value);
@@ -92,6 +102,8 @@ private:
   bool AdjustRoot(BPlusTreePage *node);
 
   void UpdateRootPageId(int insert_record = false);
+
+  //bool FindValue(page_id_t page_id, const KeyType &key, std::vector<ValueType> &result);
 
   // member variable
   std::string index_name_;
