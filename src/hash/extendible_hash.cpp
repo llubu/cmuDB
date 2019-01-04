@@ -27,6 +27,8 @@ ExtendibleHash<K, V>::ExtendibleHash(size_t size)
 template <typename K, typename V>
 ExtendibleHash<K, V>::~ExtendibleHash()
 {
+  for (int i = 0; i < (int)buckets_.size(); i++)
+    delete buckets_[i];
   buckets_.clear();
 }
 

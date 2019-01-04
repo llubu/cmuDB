@@ -1,5 +1,5 @@
 #include "buffer/buffer_pool_manager.h"
-
+#include <cassert>
 namespace cmudb
 {
 
@@ -51,10 +51,13 @@ BufferPoolManager::~BufferPoolManager()
 Page *BufferPoolManager::FetchPage(page_id_t page_id)
 {
   std::unique_lock<std::mutex> lock(latch_);
-  // temporary page
+
+  bool is_empty = false;
   Page *tmp_page = nullptr;
+
   if (page_table_->Find(page_id, tmp_page))
   {
+    replacer_->Erase(tmp_page);
     tmp_page->pin_count_++;
     return tmp_page;
   }
@@ -63,23 +66,24 @@ Page *BufferPoolManager::FetchPage(page_id_t page_id)
   {
     tmp_page = free_list_->back();
     free_list_->pop_back();
+    is_empty = true;
   }
   else if (!(replacer_->Victim(tmp_page)))
   {
     return nullptr;
   }
-  if (tmp_page->is_dirty_)
-  {
-    FlushPage(tmp_page->GetPageId());
-  }
-  page_table_->Remove(page_id);
-  tmp_page = new Page();
-  tmp_page->page_id_ = page_id;
-  tmp_page->pin_count_++;
 
-  tmp_page->WLatch();
+  if (!is_empty)
+  {
+    if (tmp_page->is_dirty_)
+      FlushPage(tmp_page->GetPageId());
+    page_table_->Remove(tmp_page->GetPageId());
+  }
+
+  tmp_page->page_id_ = page_id;
+  tmp_page->pin_count_ = 1;
   disk_manager_.ReadPage(tmp_page->GetPageId(), tmp_page->GetData());
-  tmp_page->WUnlatch();
+  page_table_->Insert(page_id, tmp_page);
 
   return tmp_page;
 }
@@ -128,10 +132,8 @@ bool BufferPoolManager::FlushPage(page_id_t page_id)
   Page *tmp_page = nullptr;
   if (page_table_->Find(page_id, tmp_page))
   {
-    tmp_page->WLatch();
-    disk_manager_.WritePage(tmp_page->GetPageId(), tmp_page->GetData());
     tmp_page->is_dirty_ = false;
-    tmp_page->WUnlatch();
+    disk_manager_.WritePage(tmp_page->GetPageId(), tmp_page->GetData());
     return true;
   }
   return false;
@@ -143,7 +145,7 @@ bool BufferPoolManager::FlushPage(page_id_t page_id)
 void BufferPoolManager::FlushAllPages()
 {
   for (size_t i = 0; i < pool_size_; ++i)
-    if (pages_[i].is_dirty_)
+    if (pages_[i].pin_count_ == 0)
       FlushPage(pages_[i].GetPageId());
 }
 
@@ -168,6 +170,7 @@ bool BufferPoolManager::DeletePage(page_id_t page_id)
 
     page_table_->Remove(page_id);
     replacer_->Erase(tmp_page);
+    free_list_->push_back(tmp_page);
   }
   disk_manager_.DeallocatePage(page_id);
   return true;
@@ -185,11 +188,13 @@ bool BufferPoolManager::DeletePage(page_id_t page_id)
 Page *BufferPoolManager::NewPage(page_id_t &page_id)
 {
   std::lock_guard<std::mutex> lock(latch_);
-  // temporary page
+
+  bool is_empty = false;
   Page *tmp_page = nullptr;
   // find a free entry in free_list
   if (free_list_->size())
   {
+    is_empty = true;
     tmp_page = free_list_->back();
     free_list_->pop_back();
   }
@@ -198,14 +203,17 @@ Page *BufferPoolManager::NewPage(page_id_t &page_id)
     return nullptr;
   }
 
-  if (tmp_page->is_dirty_)
-    FlushPage(tmp_page->GetPageId());
+  if (!is_empty)
+  {
+    if (tmp_page->is_dirty_)
+      FlushPage(tmp_page->GetPageId());
+    page_table_->Remove(tmp_page->GetPageId());
+  }
 
-  // update new page's metadata
-  tmp_page = new Page;
   page_id = disk_manager_.AllocatePage();
+  tmp_page->ResetMemory();
   tmp_page->page_id_ = page_id;
-  tmp_page->pin_count_++;
+  tmp_page->pin_count_ = 1;
 
   page_table_->Insert(page_id, tmp_page);
   return tmp_page;

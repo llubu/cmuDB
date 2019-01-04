@@ -11,7 +11,7 @@ namespace cmudb
 template <typename T>
 LRUReplacer<T>::LRUReplacer()
 {
-  hash_map_ = new ExtendibleHash<size_t, std::pair<size_t, T>>(5);
+  hash_map_ = new ExtendibleHash<size_t, std::pair<size_t, T>>(50);
   LRU_ = new std::set<std::pair<size_t, size_t>>;
   time_count_ = 0;
 }
