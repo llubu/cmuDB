@@ -20,21 +20,26 @@
  */
 #pragma once
 #include <utility>
+#include <memory>
 #include <vector>
 
+#include "common/logger.h"
 #include "page/b_plus_tree_page.h"
 
-namespace cmudb {
-#define B_PLUS_TREE_LEAF_PAGE_TYPE                                             \
+namespace cmudb
+{
+#define B_PLUS_TREE_LEAF_PAGE_TYPE \
   BPlusTreeLeafPage<KeyType, ValueType, KeyComparator>
 
 INDEX_TEMPLATE_ARGUMENTS
-class BPlusTreeLeafPage : public BPlusTreePage {
+class BPlusTreeLeafPage : public BPlusTreePage
+{
 
 public:
   // After creating a new leaf page from buffer pool, must call initialize
   // method to set default values
   void Init(page_id_t page_id, page_id_t parent_id = INVALID_PAGE_ID);
+
   // helper methods
   page_id_t GetNextPageId() const;
   void SetNextPageId(page_id_t next_page_id);
@@ -68,6 +73,6 @@ private:
   void CopyFirstFrom(const MappingType &item, int parentIndex,
                      BufferPoolManager *buffer_pool_manager);
   page_id_t next_page_id_;
-  MappingType *array;
+  MappingType array[0];
 };
 } // namespace cmudb

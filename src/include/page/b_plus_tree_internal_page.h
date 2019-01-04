@@ -46,6 +46,8 @@ public:
   void Remove(int index);
   ValueType RemoveAndReturnOnlyChild();
 
+  void SetRootPageId(page_id_t new_root_id);
+
   void MoveHalfTo(BPlusTreeInternalPage *recipient,
                   BufferPoolManager *buffer_pool_manager);
   void MoveAllTo(BPlusTreeInternalPage *recipient, int index_in_parent,
@@ -69,6 +71,6 @@ private:
                     BufferPoolManager *buffer_pool_manager);
   void CopyFirstFrom(const MappingType &pair, int parent_index,
                      BufferPoolManager *buffer_pool_manager);
-  MappingType *array;
+  MappingType array[0];
 };
 } // namespace cmudb

@@ -28,7 +28,6 @@ INDEX_TEMPLATE_ARGUMENTS
 INDEXITERATOR_TYPE::~IndexIterator()
 {
     Page *current_page = reinterpret_cast<Page *>(leaf_page_);
-    current_page->RUnlatch();
     buffer_pool_manager_->UnpinPage(current_page->GetPageId(), false);
 }
 
@@ -60,9 +59,7 @@ INDEXITERATOR_TYPE &INDEXITERATOR_TYPE::operator++()
         Page *current_page = reinterpret_cast<Page *>(leaf_page_);
         Page *next_page = buffer_pool_manager_->FetchPage(leaf_page_->GetNextPageId());
 
-        next_page->RLatch();
         offset_ = 0;
-        current_page->RUnlatch();
         buffer_pool_manager_->UnpinPage(current_page->GetPageId(), false);
         leaf_page_ = reinterpret_cast<B_PLUS_TREE_LEAF_PAGE_TYPE *>(next_page);
         return *this;
